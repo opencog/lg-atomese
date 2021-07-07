@@ -13,7 +13,7 @@
 (load "nlp/nlp-utils.scm")
 
 ; Backwards compat
-(define-public (LgConnnnectorNode . x)
+(define-public (LgConnectorNode . x)
    (apply cog-new-node (cons LgConnNodeType x)))
 
 (define-public (LinkGrammarRelationshipNode . x)
