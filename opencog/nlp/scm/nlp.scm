@@ -2,7 +2,7 @@
 
 (define-module (opencog nlp)
   #:use-module (opencog)
-  #:use-module (opencog oc-config)
+  #:use-module (opencog lg-config)
 )
 
 ; Load the C library; this calls the nameserver to load the types.
@@ -11,10 +11,6 @@
 ; Load various parts....
 (load "nlp/types/nlp_types.scm")
 (load "nlp/nlp-utils.scm")
-; NOTE: relex-utils.scm is used by cmake for configuring relex dependent tests.
-; Update relevant paths should you move it.
-(load "nlp/relex-utils.scm")
-(load "nlp/processing-utils.scm")
 
 ; Backwards compat
 (define-public (LgConnnnectorNode . x)
