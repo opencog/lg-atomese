@@ -24,13 +24,8 @@ TARGET_LINK_LIBRARIES(nlp-types
 # Without this, parallel make will race and crap up the generated files.
 ADD_DEPENDENCIES(nlp-types nlp_atom_types)
 
-IF (WIN32)
-    INSTALL (TARGETS nlp-types
-		DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
-ELSE (WIN32)
-    INSTALL (TARGETS nlp-types
-		LIBRARY DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
-ENDIF (WIN32)
+INSTALL (TARGETS nlp-types
+	LIBRARY DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
 
 INSTALL (FILES
 	${CMAKE_CURRENT_BINARY_DIR}/atom_types.h
