@@ -40,7 +40,8 @@ ADD_GUILE_MODULE (FILES
 ADD_GUILE_EXTENSION(SCM_CONFIG lg-dict "opencog-ext-path-lg-dict")
 
 INSTALL (FILES
-	LGDictNode.h
 	LGDictEntry.h
+	LGDictNode.h
+	LGDictUtils.h
 	DESTINATION "include/${PROJECT_NAME}/nlp/lg-dict"
 )
