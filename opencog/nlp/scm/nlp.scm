@@ -16,6 +16,8 @@
 (define-public (LgConnnnectorNode . x)
    (apply cog-new-node (cons LgConnNodeType x)))
 
+(define-public (LinkGrammarRelationshipNode . x)
+	(apply cog-new-node (cons LgLinkNodeType x)))
 
 ; Weird ... MUST say `(export)` or no define-publics are visible!
 ; XXX What? nothing else anywhere needs this! FIXME, somethings broke.
