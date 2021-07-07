@@ -374,7 +374,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 
 		// The link
 		const char* label = linkage_get_link_label(lkg, lk);
-		Handle lrel(as->add_node(LINK_GRAMMAR_RELATIONSHIP_NODE, label));
+		Handle lrel(as->add_node(LG_LINK_NODE, label));
 		as->add_link(EVALUATION_LINK, lrel, lst);
 
 		// Don't bother with the link instances for the minimal parse.
