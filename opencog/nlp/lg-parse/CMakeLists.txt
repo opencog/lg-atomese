@@ -19,7 +19,10 @@ TARGET_LINK_LIBRARIES (lg-parse
 	${UUID_LIBRARIES}
 )
 
-INSTALL (TARGETS lg-parse DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
+INSTALL (TARGETS lg-parse
+	EXPORT LGAtomeseTargets
+	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
+)
 
 ADD_GUILE_MODULE (FILES
 	lg-parse.scm

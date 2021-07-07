@@ -29,8 +29,14 @@ TARGET_LINK_LIBRARIES (lg-dict
 	${ATOMSPACE_smob_LIBRARY}
 )
 
-INSTALL (TARGETS lg-dict-entry DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
-INSTALL (TARGETS lg-dict DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
+INSTALL (TARGETS lg-dict-entry
+	EXPORT LGAtomeseTargets
+	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
+)
+INSTALL (TARGETS lg-dict
+	EXPORT LGAtomeseTargets
+	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
+)
 
 ADD_GUILE_MODULE (FILES
 	lg-dict.scm

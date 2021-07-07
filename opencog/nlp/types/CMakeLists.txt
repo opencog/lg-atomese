@@ -25,7 +25,9 @@ TARGET_LINK_LIBRARIES(nlp-types
 ADD_DEPENDENCIES(nlp-types nlp_atom_types)
 
 INSTALL (TARGETS nlp-types
-	LIBRARY DESTINATION "lib${LIB_DIR_SUFFIX}/opencog")
+	EXPORT LGAtomeseTargets
+	LIBRARY DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
+)
 
 INSTALL (FILES
 	${CMAKE_CURRENT_BINARY_DIR}/atom_types.h

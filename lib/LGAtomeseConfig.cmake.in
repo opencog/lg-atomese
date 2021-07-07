@@ -1,0 +1,14 @@
+@PACKAGE_INIT@
+
+include("@CMAKE_INSTALL_PREFIX@/lib/cmake/LGAtomese/LGAtomeseTargets.cmake")
+
+set(LGATOMESE_LIBRARIES
+	lg-dict
+	lg-parse
+	nlp-types
+)
+
+set(LGATOMESE_DATA_DIR "@CMAKE_INSTALL_PREFIX@/share/opencog")
+set(LGATOMESE_INCLUDE_DIR "@CMAKE_INSTALL_PREFIX@/include/")
+set(LGATOMESE_VERSION "@SEMANTIC_VERSION@")
+set(LGATOMESE_FOUND 1)
