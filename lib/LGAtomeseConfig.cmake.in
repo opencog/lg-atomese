@@ -3,6 +3,7 @@
 include("@CMAKE_INSTALL_PREFIX@/lib/cmake/LGAtomese/LGAtomeseTargets.cmake")
 
 set(LGATOMESE_LIBRARIES
+	lg-dict-entry
 	lg-dict
 	lg-parse
 	nlp-types
