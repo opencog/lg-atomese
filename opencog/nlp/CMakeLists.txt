@@ -1,6 +1,7 @@
 
 # Build C++ code in assorted NLP subdirectories
 
+ADD_SUBDIRECTORY (scm)
 ADD_SUBDIRECTORY (types)
 
 ADD_SUBDIRECTORY (lg-dict)
