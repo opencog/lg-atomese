@@ -5,7 +5,7 @@
 ;
 (define-module (opencog nlp lg-dict))
 
-(use-modules (srfi srfi-1) (opencog) (opencog oc-config) (opencog nlp) (opencog exec))
+(use-modules (srfi srfi-1) (opencog) (opencog lg-config) (opencog nlp) (opencog exec))
 
 (load-extension (string-append opencog-ext-path-lg-dict "liblg-dict") "opencog_nlp_lgdict_init")
 
