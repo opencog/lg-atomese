@@ -16,6 +16,8 @@
 WORD_NODE <- LEXICAL_NODE
 WORD_CLASS_NODE <- LEXICAL_NODE  // A signifier of a set of words
 
+REFERENCE_LINK <- ORDERED_LINK
+
 // Custom atoms to identify documents, sentences, word instances.
 // These are emitted by RelEx and are used to input text into OpenCog.
 // XXX FIXME - Every place a ConceptNode is used below, it should
