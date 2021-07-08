@@ -239,9 +239,9 @@ FIND_PACKAGE(Doxygen)
 # ===================================================================
 # Show a summary of what we found, what we will do.
 
-#SUMMARY_ADD("Cython bindings" "Cython (python) bindings" HAVE_CYTHON)
-#SUMMARY_ADD("Doxygen" "Code documentation" DOXYGEN_FOUND)
-#SUMMARY_ADD("Unit tests" "Unit tests" CXXTEST_FOUND)
 SUMMARY_ADD("LG-Atomese" "Atomese for Link Grammar" HAVE_NLP)
+SUMMARY_ADD("Python bindings" "Python (cython) bindings" HAVE_CYTHON)
+SUMMARY_ADD("Unit tests" "Unit tests" CXXTEST_FOUND)
+SUMMARY_ADD("Doxygen" "Code documentation" DOXYGEN_FOUND)
 
 SUMMARY_SHOW()
