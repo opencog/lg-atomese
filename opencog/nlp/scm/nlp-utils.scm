@@ -141,7 +141,7 @@
   the EvaluationLinks of the form
 
      EvaluationLink
-        LinkGrammarRelationshipNode 'foo'
+        LgLinkNode 'foo'
         ListLink
            WordInstanceNode 'dog@12345'
            WordInstanceNode 'toy@6789'
@@ -271,14 +271,14 @@
   of the form
 
      Evaluati`onLink
-        LinkGrammarRelationshipNode 'foo'
+        LgLinkNode 'foo'
         ListLink
            WordInstanceNode 'dog@12345'
            WordInstanceNode 'toy@6789'
 
   with the WordInstance in either the first or the second place.
 "
-	(cog-get-pred word-inst 'LinkGrammarRelationshipNode)
+	(cog-get-pred word-inst 'LgLinkNode)
 )
 
 ; ---------------------------------------------------------------------
@@ -509,7 +509,7 @@
 
 	; Pointless to delete these, since there should only be
 	; a few hundred of these, total.
-	; (cog-map-type delit 'LinkGrammarRelationshipNode)
+	; (cog-map-type delit 'LgLinkNode)
 	; (cog-map-type delit 'DefinedLinguisticConceptNode)
 	; (cog-map-type delit 'DefinedLinguisticRelationshipNode)
 
