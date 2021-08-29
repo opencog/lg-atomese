@@ -52,3 +52,8 @@ To build and run the unit tests, from the `./build` directory enter
 ```
 
 At this time, there are no unit tests.
+
+Examples
+--------
+See the [`examples`](./examples) directory for examples of how to use
+this Atomese API to Link Grammar.
