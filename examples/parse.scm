@@ -194,7 +194,7 @@
 ;        (WordInstanceNode "What@ec45f2db-a013-47c9-bde6-39b043d4a54a")
 ;        (WordInstanceNode "deal@2628c310-bff2-4ec4-826d-f1d6b49d657f")))
 ;
-; Note tht the above is very much like the earlier form:
+; Note that the above is very much like the earlier form:
 ;
 ;    (EvaluationLink
 ;      (LgLinkNode "Os")
