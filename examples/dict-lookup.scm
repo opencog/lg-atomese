@@ -54,3 +54,21 @@
 ; You can get documentation for each with the ,d or ,describe command
 ; at the guile prompt. For example:
 ,d lg-conn-linkable?
+
+; Lets try this out:
+(lg-conn-linkable?
+	(LgConnector (LgConn "Ss") (LgConnDir "+"))
+	(LgConnector (LgConn "S") (LgConnDir "-")))
+
+; The above returns true, because Ss+ can link to S-.
+; Try the above again, with Ss+ and S+  -- these are not linkable.
+; Nor is Ss+ and Sp-, and so on.
+
+; The `lg-conn-type-match?` function does the same, but ignores the
+; direction (does not do direction matching):
+(lg-conn-type-match?
+	(LgConnector (LgConn "Ss") (LgConnDir "+"))
+	(LgConnector (LgConn "S") (LgConnDir "+")))
+
+; -------------
+; That's all, folks!
