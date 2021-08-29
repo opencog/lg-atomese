@@ -11,7 +11,7 @@ lg-dict
 Import Link Grammar dictionary entries into the AtomSpace. Allows
 different dictionaries to be opened, and words to be looked up in them.
 A lookup loads all of the LG disjuncts for that word into the atomspace. 
-Implements the `LgDictNode` and the `LgDictLookup` atoms.
+Implements the `LgDictEntry` and the `LgHaveDictEntry` atoms.
 
 lg-parse
 --------
