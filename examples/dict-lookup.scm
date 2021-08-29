@@ -26,6 +26,9 @@
 ; two lines of code. All that it does is to avoid a second lookup
 ; if a lookup has already been done before.
 
+; Documentation for this Atom can be found at
+;    https://wiki.opencog.org/w/LgDictNode
+
 ; -----------
 ; Here's an example of a lookup in the Russian dictionary:
 (cog-execute! (LgDictEntry (Word "доктор") (LgDictNode "ru")))

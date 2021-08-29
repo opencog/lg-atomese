@@ -26,3 +26,49 @@
 ; To see the parse in it's full glory, it's easiest to just print
 ; the entire contents of the AtomSpace.
 (cog-prt-atomspace)
+
+; Documentation for how the parse is represented in Atomese can
+; be found in the wiki:
+;     https://wiki.opencog.org/w/Sentence_representation
+; and the node itself is documented at
+;     https://wiki.opencog.org/w/LgParseLink
+
+; ---------------------
+; Some examples of crawling over the parse graph.
+
+; First, put the sentence node where we can get at it easily.
+; (define sent (SentenceNode "sentence@0c84adfa-babd-4b71-9d3a-51dfb3352e1e"))
+
+; Get all of the parses associated with this sentence.
+(define (get-parses SENT)
+	(cog-execute! (Meet (Present (Parse (Variable "?parse") SENT)))))
+
+; Just print all of them (there should be only one, since we asked
+; for only one.)
+(get-parses sent)
+
+; Give a short name to the first parse.
+(define pars (car (cog-value->list (get-parses sent))))
+
+; Get all the word instances in the parse.
+(define (get-word-instances PARS)
+	(cog-execute! (Meet (Present (WordInstance (Variable "?wrd") PARS)))))
+
+(get-word-instances pars)
+
+; A word may occur two or more times in a sentence, and thus, the word
+; instance is a label indicating which word it is. The raw words can be
+; gotten like so:
+
+(define (get-words PARS)
+	(define qry
+		(Query
+			(VariableList (Variable "?winst") (Variable "?wrd"))
+			(Present
+				(WordInstance (Variable "?winst") PARS)
+				(Reference (Variable "?winst") (Variable "?wrd")))
+			(Variable "?wrd")))
+
+	(cog-execute! qry))
+
+(get-words pars)
