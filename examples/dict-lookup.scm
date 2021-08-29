@@ -35,3 +35,22 @@
 ; in the much larger dictionary entries.
 
 ; -----------
+; The `(opencog nlp lg-dict)` provides a number of useful utilities and
+; tools.
+
+; Is a word in a dictionary? Returns true or false:
+(cog-evaluate! (LgHaveDictEntry (Word "доктор") (LgDictNode "ru")))
+(cog-evaluate! (LgHaveDictEntry (Word "дasdf") (LgDictNode "ru")))
+
+; Note that `cog-evaluate!` is used here, not `cog-execute!`
+
+; Other utility functions include:
+;
+; lg-conn-type-match?
+; lg-conn-linkable?
+; lg-conn-get-type
+; lg-conn-get-dir
+;
+; You can get documentation for each with the ,d or ,describe command
+; at the guile prompt. For example:
+,d lg-conn-linkable?

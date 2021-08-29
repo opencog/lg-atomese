@@ -79,7 +79,18 @@
 
 (define-public (lg-similar? word1 word2)
 "
-  lg-similar? WORD1 WORD2 - Check if two words' LG entries intersect
+  lg-similar? WORD1 WORD2 - Check two words have a common disjunct.
+
+  Caution: This utility isn't really useful, as designed. Most LG
+  dictioary entries have hundreds, if not tens of thousands of
+  disjuncts, and will frequently have at least one disjunct in common,
+  while otherwise being dissimilar.  A much better measure of similarity
+  is provided by the Jaccard distance, which counts how many disjuncts
+  are shared in common.  (The Jaccard distance is currently not
+  implemented here.)
+
+  A second problem with this function is that the implementation is very
+  inefficient and slow.
 "
 	(define (get-set w)
 		(define roots (filter
@@ -92,7 +103,7 @@
 	(lg-get-dict-entry word1)
 	(lg-get-dict-entry word2)
 
-	; Check if the two word has common LG dict entry
+	; Check if the two words have a common LG dict entry
 	(not (nil? (lset-intersection equal? (get-set word1) (get-set word2))))
 )
 
