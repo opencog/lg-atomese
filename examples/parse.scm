@@ -12,6 +12,8 @@
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog nlp) (opencog nlp lg-parse))
 
+(use-modules (srfi srfi-1))
+
 ; Parse an example sentence
 (cog-execute!
 	(LgParseMinimal    ; There is also a "full" parse, demoed below.
@@ -48,7 +50,7 @@
 (get-parses sent)
 
 ; Give a short name to the first parse.
-(define pars (car (cog-value->list (get-parses sent))))
+(define pars (first (cog-value->list (get-parses sent))))
 
 ; Get all the word instances in the parse.
 (define (get-word-instances PARS)
@@ -72,3 +74,39 @@
 	(cog-execute! qry))
 
 (get-words pars)
+
+; The above is listed in arbitrary order. The below converts the
+; Atomese graph holding the word sequence into a collection of
+; scheme pairs.  This is nothing other than a format change:
+; it's still the same graph, but represented in Scheme, rather
+; than Atomese.
+
+(define (get-word-seq PARS)
+	(define qry
+		(Query
+			(VariableList
+				(Variable "?winst")
+				(Variable "?wrd")
+				(Variable "?wseq"))
+			(Present
+				(WordInstance (Variable "?winst") PARS)
+				(WordSequence (Variable "?winst") (Variable "?wseq"))
+				(Reference (Variable "?winst") (Variable "?wrd")))
+			(List (Variable "?wseq") (Variable "?wrd"))))
+
+	; Run the query. This returns a QueueValue.
+	(define qwords (cog-execute! qry))
+
+	; Convert the QueueValue to a scheme list.
+	(define wds (cog-value->list qwords))
+
+	; Convert the list of Atoms to scheme pairs.
+	(map
+		(lambda (APAIR)
+			(cons
+				(cog-name (cog-value-ref APAIR 0))
+				(cog-name (cog-value-ref APAIR 1))))
+		wds)
+)
+
+(get-word-seq pars)
