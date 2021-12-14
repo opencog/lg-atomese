@@ -13,8 +13,8 @@
 //
 // WordNodes are lexical, because we'll be using them to look up
 // information in a table.
-WORD_NODE <- LEXICAL_NODE
-WORD_CLASS_NODE <- LEXICAL_NODE  // A signifier of a set of words
+WORD_NODE <- ITEM_NODE
+WORD_CLASS_NODE <- ITEM_CLASS_NODE  // A signifier of a set of words
 
 REFERENCE_LINK <- ORDERED_LINK
 
@@ -57,9 +57,9 @@ LG_PARSE_MINIMAL <- LG_PARSE_LINK
 
 // Connector: same meaning and syntax as in link-grammar, except that
 // the direction and the multi-connector parts get distinct types.
-LG_CONN_NODE <- PREDICATE_NODE   // e.g. "MX"
-LG_CONN_MULTI_NODE <- NODE  // multi-connector "@"
-LG_CONN_DIR_NODE <- NODE    // e.g. "+"
+LG_CONN_NODE <- LEXICAL_NODE   // e.g. "MX"
+LG_CONN_MULTI_NODE <- LEXICAL_NODE  // multi-connector "@"
+LG_CONN_DIR_NODE <- DIRECTION_NODE  // e.g. "+"
 
 // Consists of the connector node, the direction, and possibly the
 // multi-connector node.
@@ -87,7 +87,7 @@ LG_WORD_CSET <- CONNECTOR_SEQ
 LG_DISJUNCT <- SECTION
 
 // This is NOT a connector, its a pair of connected connectors.
-LG_LINK_NODE <- PREDICATE_NODE   // e.g. "MX"
+LG_LINK_NODE <- BOND_NODE   // e.g. "MX"
 
 // For LG link instance of a specific parse of a sentence
 // LgLinkInstanceNode will be an instance of LgLinkNode
