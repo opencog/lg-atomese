@@ -23,7 +23,7 @@ The expected format of an LgParseLink is:
 
 When executed, the result of parsing the phrase text, using the
 specified dictionary, is placed in the atomspace.  Execution
-returns a Sentencenode pointing at the parse results.  If the third,
+returns a SentenceNode pointing at the parse results.  If the third,
 optional NumberNode is present, then that will be the number of
 parses that are captured. If the NumberNode is not present, it
 defaults to four.
@@ -35,6 +35,14 @@ insert the resulting disjuncts into the AtomSpace. As the disjuncts
 are quite verbose, this significantly reduces the number of atoms
 placed in the AtomSpace.
 
+LgParseDisjuncts
+----------------
+This performs the same parse as `LgParseLink`; however, it does not
+insert the resulting word instances and linkages into the AtomSpace;
+instead, it ONLY inserts the disjuncts.  As the linkages are quite
+verbose, this significantly reduces the number of atoms placed in
+the AtomSpace.
+
 Example
 -------
 Here's a working example:
@@ -44,6 +52,9 @@ Here's a working example:
     (LgDictNode "en") (NumberNode 1)))
 (cog-prt-atomspace)
 ```
+
+More examples can be found in the top-level
+[`examples`](../../../examples) directory.
 
 Notes
 -----
@@ -59,8 +70,14 @@ this means that there are two ways of getting parsed text into the
 atomspace: using this link, or using the RelEx server.  There are
 competing pros and cons of doing it each way:
 
+* The RelEx server is deprecated/obsolete. It still works, but there
+  no support for it any more. No bug-fixes, no active development.
+
 * The RelEx server is a network server, and can be run on any
   network-connected machine.
+
+* If you want to have a networked LG parser server, you can do this
+  with the `CogStoraeNode`. See the examples directory.
 
 * The RelEx server generates scheme strings, which must be parsed by
   the scheme interpreter in OpenCog. This adds a lot of overhead, and
