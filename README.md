@@ -38,6 +38,7 @@ Perform the following steps at the shell prompt:
     cd build
     cmake ..
     make
+    sudo make install
 ```
 Libraries will be built into subdirectories within build, mirroring
 the structure of the source directory root.
