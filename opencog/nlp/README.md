@@ -16,11 +16,14 @@ Implements the `LgDictEntry` and the `LgHaveDictEntry` atoms.
 lg-parse
 --------
 Parse sentences and place parse results into the AtomSpace. Implements
-the `LgParse` atom.
+the `LgParse`, `LgParseMinimal` and `LgParseDisjuncts` Atoms.
 
 A parsed sentence consists of zero or more parses. Each parse consists
 of a sequence of `WordInstanceNode`, together with a listing of the 
-LG Links connecting those words.
+LG Links connecting those words. The `LgParseMinimal` link does less
+work, by skipping the creation of the disjuncts. The `LgParseDisjuncts`
+link does less work by creating *only* the disjuncts, and none of the
+rest of the linkage info.
 
 scm
 ---
@@ -32,4 +35,5 @@ LG markup from a parsed sentence.
 
 types
 -----
-Definition of assorted natural-language-processing Atom Types.
+Definition of assorted natural-language-processing Atom Types. These
+are used by many different OpenCog NLP subsystems.

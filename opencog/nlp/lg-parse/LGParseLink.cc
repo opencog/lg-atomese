@@ -109,6 +109,19 @@ LGParseMinimal::LGParseMinimal(const HandleSeq&& oset, Type t)
 	init();
 }
 
+LGParseDisjuncts::LGParseDisjuncts(const HandleSeq&& oset, Type t)
+	: LGParseLink(std::move(oset), t)
+{
+	// Type must be as expected
+	if (not nameserver().isA(t, LG_PARSE_DISJUNCTS))
+	{
+		const std::string& tname = nameserver().getTypeName(t);
+		throw InvalidParamException(TRACE_INFO,
+			"Expecting an LgParseDisjuncts, got %s", tname.c_str());
+	}
+	init();
+}
+
 // =================================================================
 
 ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
@@ -232,8 +245,9 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	Handle snode(as->add_node(SENTENCE_NODE, sentstr));
 
 	// Avoid generating big piles of Atoms, if the user did not
-	// want them. (The extra Atoms deescribe disjuncts, etc.)
+	// want them. (The extra Atoms describe disjuncts, etc.)
 	bool minimal = (get_type() == LG_PARSE_MINIMAL);
+	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
 
 	// There are only so many parses available.
 	int num_available = sentence_num_linkages_post_processed(sent);
@@ -245,8 +259,15 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		if (0 < sentence_num_violations(sent, i)) continue;
 		jct ++;
 		Linkage lkg = linkage_create(i, sent, opts);
-		Handle pnode = cvt_linkage(lkg, i, sentstr, phrstr, minimal, as);
-		as->add_link(PARSE_LINK, pnode, snode);
+		if (djonly)
+		{
+			make_djs(lkg, phrstr, as);
+		}
+		else
+		{
+			Handle pnode = cvt_linkage(lkg, i, sentstr, phrstr, minimal, as);
+			as->add_link(PARSE_LINK, pnode, snode);
+		}
 		linkage_delete(lkg);
 	}
 
@@ -259,6 +280,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 static std::atomic<unsigned long> wcnt;
 
+// Take a single linkage, and stuff it into the AtomSpace.
 Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
                                 const char* phrstr,
                                 bool minimal, AtomSpace* as) const
@@ -272,33 +294,10 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		size_t sb = linkage_get_word_byte_start(lkg, w);
-		size_t eb = linkage_get_word_byte_end(lkg, w);
+		// Get the word in the sentence.
+		const char* wrd = get_word_string(lkg, w, phrstr);
 
-		// Problem: the default LG API supplies the word together with
-		// the subscript, and with word regex and guess-marks. We really
-		// do NOT want that crud. So use the byte offsets to get the
-		// actual original string.  Since LEFT-WALL and RIGHT-WALL have
-		// no offsets, we need to handle those differently.
-		// strndupa allocates on stack, no need to free.
-		const char* wrd;
-		if (eb == sb) // Both are equal to -1
-		{
-			wrd = linkage_get_word(lkg, w);
-		}
-		else
-		{
-			// eb points at the byte after the last char,
-			// its a great place to write a null byte.
-			wrd = strndupa(phrstr + sb, eb-sb);
-		}
-
-		// LEFT-WALL is not an ordinary word. Its special. Make it
-		// extra-special by adding "illegal" punctuation to it.
-		// FYI, this is compatible with Relex, relex2logic.
-		if (0 == w and 0 == strcmp(wrd, "LEFT-WALL")) wrd = "###LEFT-WALL###";
-		if (nwords-1 == w and 0 == strcmp(wrd, "RIGHT-WALL")) wrd = "###RIGHT-WALL###";
-
+		// Generate a unique UUID for that word.
 		uuid_t uu2;
 		uuid_generate(uu2);
 		char idstr2[37];
@@ -319,49 +318,13 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 		if (minimal) continue;
 
 		// Convert the disjunct to atomese.
-		// This requires parsing a string. Fortunately, the
-		// string is a very simple format.
-		const char* djstr = linkage_get_disjunct_str(lkg, w);
+		HandleSeq conseq = make_conseq(lkg, w);
 
-		HandleSeq conseq;
-		const char* p = djstr;
-		while (*p)
-		{
-			while (' ' == *p) p++;
-			if (0 == *p) break;
-			bool multi = false;
-			if ('@' == *p) { multi = true; p++; }
-			const char* s = strchr(p, ' ');
-			size_t len = s-p-1;
-			if (NULL == s) len = strlen(p) - 1;
-			char cstr[60];
-			if (60 <= len)
-				throw RuntimeException(TRACE_INFO,
-					"LGParseLink: Dictionary has a bug; Uuexpectedly long connector=%s", djstr);
-			strncpy(cstr, p, len);
-			cstr[len] = 0;
-			Handle con(createNode(LG_CONN_NODE, cstr));
-			cstr[0] = *(p+len);
-			cstr[1] = 0;
-			Handle dir(createNode(LG_CONN_DIR_NODE, cstr));
-			p = p+len+1;
-
-			HandleSeq cono;
-			cono.push_back(con);
-			cono.push_back(dir);
-			if (multi)
-			{
-				Handle mu(createNode(LG_CONN_MULTI_NODE, "@"));
-				cono.push_back(mu);
-			}
-			Handle conl(createLink(std::move(cono), LG_CONNECTOR));
-			conseq.push_back(conl);
-		}
+		if (0 == conseq.size()) continue;
 
 		// Set up the disjuncts on each word
-		if (0 < conseq.size())
-			as->add_link(LG_WORD_CSET, winst,
-				as->add_link(LG_AND, std::move(conseq)));
+		as->add_link(LG_WORD_CSET, winst,
+			as->add_link(LG_AND, std::move(conseq)));
 	}
 
 	// Loop over all the links
@@ -403,6 +366,116 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 	}
 
 	return pnode;
+}
+
+// Create only the disjuncts for the parse, and nothing else.
+void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
+                           AtomSpace* as) const
+{
+	// Loop over all the words.
+	HandleSeq wrds;
+	int nwords = linkage_get_num_words(lkg);
+	for (int w=0; w<nwords; w++)
+	{
+		HandleSeq conseq = make_conseq(lkg, w);
+		if (0 == conseq.size()) continue;
+
+		const char* wrd = get_word_string(lkg, w, phrstr);
+
+		// Set up the disjuncts on each word
+		Handle dj = as->add_link(LG_DISJUNCT,
+			as->add_node(WORD_NODE, wrd),
+			as->add_link(LG_AND, std::move(conseq)));
+
+		// Increment by exactly one, every time it appears.
+		as->increment_countTV(dj);
+	}
+}
+
+/// Convert the disjunct to atomese.
+HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
+{
+	// This requires parsing a string. Fortunately, the
+	// string is a very simple format.
+	const char* djstr = linkage_get_disjunct_str(lkg, w);
+
+	HandleSeq conseq;
+	const char* p = djstr;
+	while (*p)
+	{
+		while (' ' == *p) p++;
+		if (0 == *p) break;
+		bool multi = false;
+		if ('@' == *p) { multi = true; p++; }
+		const char* s = strchr(p, ' ');
+		size_t len = s-p-1;
+		if (NULL == s) len = strlen(p) - 1;
+		char cstr[60];
+		if (60 <= len)
+			throw RuntimeException(TRACE_INFO,
+				"LGParseLink: Dictionary has a bug; Uuexpectedly long connector=%s", djstr);
+		strncpy(cstr, p, len);
+		cstr[len] = 0;
+		Handle con(createNode(LG_CONN_NODE, cstr));
+		cstr[0] = *(p+len);
+		cstr[1] = 0;
+		Handle dir(createNode(LG_CONN_DIR_NODE, cstr));
+		p = p+len+1;
+
+		HandleSeq cono;
+		cono.push_back(con);
+		cono.push_back(dir);
+		if (multi)
+		{
+			Handle mu(createNode(LG_CONN_MULTI_NODE, "@"));
+			cono.push_back(mu);
+		}
+		Handle conl(createLink(std::move(cono), LG_CONNECTOR));
+		conseq.push_back(conl);
+	}
+
+	return conseq;
+}
+
+const char* LGParseLink::get_word_string(Linkage lkg, int w,
+                                         const char* phrstr) const
+{
+#define BUFSZ 240
+	static thread_local char buff[BUFSZ];
+
+	size_t sb = linkage_get_word_byte_start(lkg, w);
+	size_t eb = linkage_get_word_byte_end(lkg, w);
+
+	// Problem: the default LG API supplies the word together with
+	// the subscript, and with word regex and guess-marks. We really
+	// do NOT want that crud. So use the byte offsets to get the
+	// actual original string.  Since LEFT-WALL and RIGHT-WALL have
+	// no offsets, we need to handle those differently.
+	if (eb != sb) // Neither are equal to -1
+	{
+		size_t len = eb-sb;
+		if (BUFSZ <= len)
+			throw FatalErrorException(TRACE_INFO,
+				"LGParseLink: Unexpectly long word; length=%lu", len);
+
+		strncpy(buff, phrstr + sb, len);
+		buff[len] = 0;
+		return buff;
+	}
+
+	const char* wrd = linkage_get_word(lkg, w);
+
+	// LEFT-WALL is not an ordinary word. Its special. Make it
+	// extra-special by adding "illegal" punctuation to it.
+	// FYI, this is compatible with Relex, relex2logic.
+	if (0 == w and 0 == strcmp(wrd, "LEFT-WALL"))
+		return "###LEFT-WALL###";
+
+	int nwords = linkage_get_num_words(lkg);
+	if (nwords-1 == w and 0 == strcmp(wrd, "RIGHT-WALL"))
+		return "###RIGHT-WALL###";
+
+	return wrd;
 }
 
 DEFINE_LINK_FACTORY(LGParseLink, LG_PARSE_LINK)

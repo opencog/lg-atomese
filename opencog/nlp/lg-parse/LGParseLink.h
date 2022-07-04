@@ -48,6 +48,9 @@ class LGParseLink : public FunctionLink
 {
 protected:
 	void init();
+	const char* get_word_string(Linkage, int, const char*) const;
+	HandleSeq make_conseq(Linkage, int) const;
+	void make_djs(Linkage, const char*, AtomSpace*) const;
 	Handle cvt_linkage(Linkage, int, const char*, const char*,
 	                   bool, AtomSpace*) const;
 
@@ -70,21 +73,22 @@ public:
 	LGParseMinimal& operator=(const LGParseMinimal&) = delete;
 };
 
-typedef std::shared_ptr<LGParseLink> LGParseLinkPtr;
-static inline LGParseLinkPtr LGParseLinkCast(const Handle& h)
-	{ return std::dynamic_pointer_cast<LGParseLink>(h); }
-static inline LGParseLinkPtr LGParseLinkCast(AtomPtr a)
-	{ return std::dynamic_pointer_cast<LGParseLink>(a); }
+class LGParseDisjuncts : public LGParseLink
+{
+public:
+	LGParseDisjuncts(const HandleSeq&&, Type=LG_PARSE_DISJUNCTS);
+	LGParseDisjuncts(const LGParseDisjuncts&) = delete;
+	LGParseDisjuncts& operator=(const LGParseDisjuncts&) = delete;
+};
 
-#define createLGParseLink std::make_shared<LGParseLink>
+LINK_PTR_DECL(LGParseLink)
+#define createLGParseLink CREATE_DECL(LGParseLink)
 
-typedef std::shared_ptr<LGParseMinimal> LGParseMinimalPtr;
-static inline LGParseMinimalPtr LGParseMinimalCast(const Handle& h)
-	{ return std::dynamic_pointer_cast<LGParseMinimal>(h); }
-static inline LGParseMinimalPtr LGParseMinimalCast(AtomPtr a)
-	{ return std::dynamic_pointer_cast<LGParseMinimal>(a); }
+LINK_PTR_DECL(LGParseMinimal)
+#define createLGParseMinimal CREATE_DECL(LGParseMinimal)
 
-#define createLGParseMinimal std::make_shared<LGParseMinimal>
+LINK_PTR_DECL(LGParseDisjuncts)
+#define createLGParseDisjuncts CREATE_DECL(LGParseDisjuncts)
 
 /** @}*/
 }
