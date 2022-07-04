@@ -26,20 +26,24 @@
 ; the entire contents of the AtomSpace.
 (cog-prt-atomspace)
 
-; Look for disjuncts, for example, you should see something like
+; One of the disjuncts will look like this:
 ;
-;    (LgWordCset
-;      (WordInstanceNode "What@ec45f2db-a013-47c9-bde6-39b043d4a54a")
+;    (LgDisjunct
+;      (WordNode "this")
 ;      (LgAnd
 ;        (LgConnector
-;          (LgConnNode "Wn")
+;          (LgConnNode "Wd")
 ;          (LgConnDirNode "-"))
 ;        (LgConnector
-;          (LgConnNode "O")
+;          (LgConnNode "Ss*b")
 ;          (LgConnDirNode "+"))))
 ;
-; which says that the word `What` had the disjunct `Wn- & O+` on it.
+; which says that the word `this` had the disjunct `Wd- & Ss*b+` on it.
 ;
+; Note that this format does NOT include any info about which
+; word-instance this was in the sentence, nor which words the
+; connectors connected to. That info is available by using the
+; `LgParseLink` parser.
 
 ; ---------------------
 ; That's all, folks!
