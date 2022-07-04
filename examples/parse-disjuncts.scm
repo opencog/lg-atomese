@@ -28,7 +28,7 @@
 
 ; One of the disjuncts will look like this:
 ;
-;    (LgDisjunct
+;    (LgDisjunct (ctv 1 0 1)
 ;      (WordNode "this")
 ;      (LgAnd
 ;        (LgConnector
@@ -39,6 +39,10 @@
 ;          (LgConnDirNode "+"))))
 ;
 ; which says that the word `this` had the disjunct `Wd- & Ss*b+` on it.
+; Note that the CountTruthValue on `LgDisjunct` has been set to 1.0.
+; If the parse is re-run, the count will increment by one.  If more
+; than one parse is requested, then the counts will reflect the number
+; of times a given disjunct was used in all of the parses.
 ;
 ; Note that this format does NOT include any info about which
 ; word-instance this was in the sentence, nor which words the
