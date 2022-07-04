@@ -8,6 +8,16 @@ This repo provides an Atomese API for
 Grammar dictionaries and parse results to be accessed from the
 AtomSpace.
 
+Status
+------
+### Version 1.0
+The code here has been used in production for many years.
+
+However, there are still some things that would be nice to have.
+This includes:
+* Placing costs on the parse results.
+* Reporting costs in dictionary lookups.
+
 Prerequisites
 -------------
 The following packages must first be built and installed.
