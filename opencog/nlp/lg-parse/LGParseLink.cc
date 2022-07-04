@@ -294,33 +294,10 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		size_t sb = linkage_get_word_byte_start(lkg, w);
-		size_t eb = linkage_get_word_byte_end(lkg, w);
+		// Get the word in the sentence.
+		const char* wrd = get_word_string(lkg, w, phrstr);
 
-		// Problem: the default LG API supplies the word together with
-		// the subscript, and with word regex and guess-marks. We really
-		// do NOT want that crud. So use the byte offsets to get the
-		// actual original string.  Since LEFT-WALL and RIGHT-WALL have
-		// no offsets, we need to handle those differently.
-		// strndupa allocates on stack, no need to free.
-		const char* wrd;
-		if (eb == sb) // Both are equal to -1
-		{
-			wrd = linkage_get_word(lkg, w);
-		}
-		else
-		{
-			// eb points at the byte after the last char,
-			// its a great place to write a null byte.
-			wrd = strndupa(phrstr + sb, eb-sb);
-		}
-
-		// LEFT-WALL is not an ordinary word. Its special. Make it
-		// extra-special by adding "illegal" punctuation to it.
-		// FYI, this is compatible with Relex, relex2logic.
-		if (0 == w and 0 == strcmp(wrd, "LEFT-WALL")) wrd = "###LEFT-WALL###";
-		if (nwords-1 == w and 0 == strcmp(wrd, "RIGHT-WALL")) wrd = "###RIGHT-WALL###";
-
+		// Generate a unique UUID for that word.
 		uuid_t uu2;
 		uuid_generate(uu2);
 		char idstr2[37];
@@ -391,6 +368,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 	return pnode;
 }
 
+// Create only the disjuncts for the parse, and nothing else.
 void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
                            AtomSpace* as) const
 {
@@ -399,35 +377,10 @@ void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		size_t sb = linkage_get_word_byte_start(lkg, w);
-		size_t eb = linkage_get_word_byte_end(lkg, w);
-
-		// Problem: the default LG API supplies the word together with
-		// the subscript, and with word regex and guess-marks. We really
-		// do NOT want that crud. So use the byte offsets to get the
-		// actual original string.  Since LEFT-WALL and RIGHT-WALL have
-		// no offsets, we need to handle those differently.
-		// strndupa allocates on stack, no need to free.
-		const char* wrd;
-		if (eb == sb) // Both are equal to -1
-		{
-			wrd = linkage_get_word(lkg, w);
-		}
-		else
-		{
-			// eb points at the byte after the last char,
-			// its a great place to write a null byte.
-			wrd = strndupa(phrstr + sb, eb-sb);
-		}
-
-		// LEFT-WALL is not an ordinary word. Its special. Make it
-		// extra-special by adding "illegal" punctuation to it.
-		// FYI, this is compatible with Relex, relex2logic.
-		if (0 == w and 0 == strcmp(wrd, "LEFT-WALL")) wrd = "###LEFT-WALL###";
-		if (nwords-1 == w and 0 == strcmp(wrd, "RIGHT-WALL")) wrd = "###RIGHT-WALL###";
-
 		HandleSeq conseq = make_conseq(lkg, w);
 		if (0 == conseq.size()) continue;
+
+		const char* wrd = get_word_string(lkg, w, phrstr);
 
 		// Set up the disjuncts on each word
 		as->add_link(LG_DISJUNCT,
@@ -479,6 +432,47 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
 	}
 
 	return conseq;
+}
+
+const char* LGParseLink::get_word_string(Linkage lkg, int w,
+                                         const char* phrstr) const
+{
+#define BUFSZ 240
+	static thread_local char buff[BUFSZ];
+
+	size_t sb = linkage_get_word_byte_start(lkg, w);
+	size_t eb = linkage_get_word_byte_end(lkg, w);
+
+	// Problem: the default LG API supplies the word together with
+	// the subscript, and with word regex and guess-marks. We really
+	// do NOT want that crud. So use the byte offsets to get the
+	// actual original string.  Since LEFT-WALL and RIGHT-WALL have
+	// no offsets, we need to handle those differently.
+	if (eb != sb) // Neither are equal to -1
+	{
+		size_t len = eb-sb;
+		if (BUFSZ <= len)
+			throw FatalErrorException(TRACE_INFO,
+				"LGParseLink: Unexpectly long word; length=%lu", len);
+
+		strncpy(buff, phrstr + sb, len);
+		buff[len] = 0;
+		return buff;
+	}
+
+	const char* wrd = linkage_get_word(lkg, w);
+
+	// LEFT-WALL is not an ordinary word. Its special. Make it
+	// extra-special by adding "illegal" punctuation to it.
+	// FYI, this is compatible with Relex, relex2logic.
+	if (0 == w and 0 == strcmp(wrd, "LEFT-WALL"))
+		return "###LEFT-WALL###";
+
+	int nwords = linkage_get_num_words(lkg);
+	if (nwords-1 == w and 0 == strcmp(wrd, "RIGHT-WALL"))
+		return "###RIGHT-WALL###";
+
+	return wrd;
 }
 
 DEFINE_LINK_FACTORY(LGParseLink, LG_PARSE_LINK)
