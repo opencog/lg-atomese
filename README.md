@@ -1,7 +1,7 @@
 Atomese API for Link Grammar
 ============================
 
-[![CircleCI](https://circleci.com/gh/opencog/opencog.svg?style=svg)](https://circleci.com/gh/opencog/lg-atomese)
+[![CircleCI](https://circleci.com/gh/opencog/lg-atomese.svg?style=svg)](https://circleci.com/gh/opencog/lg-atomese)
 
 This repo provides an Atomese API for
 [Link Grammar](https://github.com/opencog/link-grammar), allowing Link
