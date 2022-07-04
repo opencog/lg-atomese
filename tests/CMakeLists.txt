@@ -12,8 +12,4 @@ SET(GUILE_LOAD_PATH "${PROJECT_BINARY_DIR}/opencog/scm")
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 # Perform tests in component-dependency order, as much as possible.
-IF (CXXTEST_FOUND)
-
-	# ADD_SUBDIRECTORY (nlp)
-
-ENDIF (CXXTEST_FOUND)
+ADD_SUBDIRECTORY (lg-parse)
