@@ -383,9 +383,12 @@ void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 		const char* wrd = get_word_string(lkg, w, phrstr);
 
 		// Set up the disjuncts on each word
-		as->add_link(LG_DISJUNCT,
+		Handle dj = as->add_link(LG_DISJUNCT,
 			as->add_node(WORD_NODE, wrd),
 			as->add_link(LG_AND, std::move(conseq)));
+
+		// Increment by exactly one, every time it appears.
+		as->increment_countTV(dj);
 	}
 }
 
