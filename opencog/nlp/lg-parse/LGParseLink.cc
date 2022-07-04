@@ -261,7 +261,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		Linkage lkg = linkage_create(i, sent, opts);
 		if (djonly)
 		{
-			make_djs(lkg, i, as);
+			make_djs(lkg, phrstr, as);
 		}
 		else
 		{
@@ -391,7 +391,8 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 	return pnode;
 }
 
-Handle LGParseLink::make_djs(Linkage lkg, AtomSpace* as) const
+void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
+                           AtomSpace* as) const
 {
 	// Loop over all the words.
 	HandleSeq wrds;
@@ -425,7 +426,7 @@ Handle LGParseLink::make_djs(Linkage lkg, AtomSpace* as) const
 		if (0 == w and 0 == strcmp(wrd, "LEFT-WALL")) wrd = "###LEFT-WALL###";
 		if (nwords-1 == w and 0 == strcmp(wrd, "RIGHT-WALL")) wrd = "###RIGHT-WALL###";
 
-		HandleSeq conseq = make_conseq(lkg);
+		HandleSeq conseq = make_conseq(lkg, w);
 		if (0 == conseq.size()) continue;
 
 		// Set up the disjuncts on each word
@@ -433,8 +434,6 @@ Handle LGParseLink::make_djs(Linkage lkg, AtomSpace* as) const
 			as->add_node(WORD_NODE, wrd),
 			as->add_link(LG_AND, std::move(conseq)));
 	}
-
-	return pnode;
 }
 
 /// Convert the disjunct to atomese.
