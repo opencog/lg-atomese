@@ -9,7 +9,9 @@
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog persist))
 (use-modules (opencog persist-cog))
-(use-modules (opencog nlp) (opencog nlp lg-parse))
+(use-modules (opencog nlp))
+(use-modules (opencog nlp lg-dict))
+(use-modules (opencog nlp lg-parse))
 
 ; Define a StorageNode that will connect to the remote server.
 (define csn (CogStorageNode "cog://localhost:17003"))
@@ -35,6 +37,15 @@
 
 ; Take a look at everything in the local atomspace.
 (cog-prt-atomspace)
+
+; ----------------------------------------------------
+; How about dict entries?
+; The API is a bit diffferent here, than above.
+
+(define lookup (LgDictEntry (Word "yikes") (LgDictNode "en")))
+(fetch-query lookup anchor)
+(fetch-incoming-by-type (Word "yikes") 'LgDisjunct)
+(cog-incoming-by-type (Word "yikes") 'LgDisjunct)
 
 ; Close the network connection
 (cog-close csn)
