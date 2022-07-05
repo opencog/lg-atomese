@@ -28,6 +28,7 @@
 #include <opencog/atoms/atom_types/NameServer.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/core/NumberNode.h>
+#include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/nlp/lg-dict/LGDictNode.h>
 #include "LGParseLink.h"
@@ -248,6 +249,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// want them. (The extra Atoms describe disjuncts, etc.)
 	bool minimal = (get_type() == LG_PARSE_MINIMAL);
 	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
+	HandleSet djs;
 
 	// There are only so many parses available.
 	int num_available = sentence_num_linkages_post_processed(sent);
@@ -261,7 +263,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		Linkage lkg = linkage_create(i, sent, opts);
 		if (djonly)
 		{
-			make_djs(lkg, phrstr, as);
+			make_djs(lkg, phrstr, as, djs);
 		}
 		else
 		{
@@ -275,6 +277,11 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	parse_options_delete(opts);
 	lg_error_flush();
 	lg_error_clearall();
+
+	// Return a LinkValue holding all of the disjuncts
+	if (djonly)
+		return createLinkValue(djs);
+
 	return snode;
 }
 
@@ -370,7 +377,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 
 // Create only the disjuncts for the parse, and nothing else.
 void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
-                           AtomSpace* as) const
+                           AtomSpace* as, HandleSet& djs) const
 {
 	// Loop over all the words.
 	HandleSeq wrds;
@@ -388,7 +395,9 @@ void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 			as->add_link(LG_AND, std::move(conseq)));
 
 		// Increment by exactly one, every time it appears.
-		as->increment_countTV(dj);
+		dj = as->increment_countTV(dj);
+
+		djs.insert(dj);
 	}
 }
 

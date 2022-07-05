@@ -50,7 +50,7 @@ protected:
 	void init();
 	const char* get_word_string(Linkage, int, const char*) const;
 	HandleSeq make_conseq(Linkage, int) const;
-	void make_djs(Linkage, const char*, AtomSpace*) const;
+	void make_djs(Linkage, const char*, AtomSpace*, HandleSet&) const;
 	Handle cvt_linkage(Linkage, int, const char*, const char*,
 	                   bool, AtomSpace*) const;
 
