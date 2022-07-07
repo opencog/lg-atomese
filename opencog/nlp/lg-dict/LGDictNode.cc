@@ -33,7 +33,7 @@ using namespace opencog;
 
 // ------------------------------------------------------
 // Convert LG errors to opencog log messges
-// Not static, its also used by LgParseNode.cc
+// Not static, its also used by LgParseLink.cc
 void error_handler(lg_errinfo *ei, void *data);
 void error_handler(lg_errinfo *ei, void *data)
 {

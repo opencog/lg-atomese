@@ -37,12 +37,12 @@ namespace opencog
 
 /// Link Grammar parser.
 ///
-/// An atomspace wrapper to the LG parser.
-/// The LGParseLink places a full parse into the atomspace, including
+/// An AtomSpace wrapper to the LG parser.
+/// The LGParseLink places a full parse into the AtomSpace, including
 /// the disjuncts and the link-instances.
 ///
 /// The LGParseMinimal ony places the words, word-sequence and links
-/// into the atomspace.
+/// into the AtomSpace.
 
 class LGParseLink : public FunctionLink
 {
