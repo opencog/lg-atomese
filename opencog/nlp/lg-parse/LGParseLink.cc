@@ -43,6 +43,8 @@ void error_handler(lg_errinfo *ei, void *data);
 ///         PhraseNode "this is a test."
 ///         LgDictNode "en"
 ///         NumberNode  6   -- optional, number of parses.
+///         AtomSpace  foo  -- optional, AtomSpace holdig dict info.
+///         StorageNode bar -- optional, StorageNode holding dict info.
 ///
 /// When executed, the result of parsing the phrase text, using the
 /// specified dictionary, is placed in the atomspace.  Execution
@@ -50,6 +52,20 @@ void error_handler(lg_errinfo *ei, void *data);
 /// optional NumberNode is present, then that will be the number of
 /// parses that are captured. If the NumberNode is not present, it
 /// defaults to four.
+///
+/// If the `LgDictNode` specified an AtomSpace-backed dictionary, and
+/// the fourth argument is present, then the dictionary word lookups
+/// will be performed from the specified AtomSpace.  Note that
+/// EvaluationLinks will be created in that AtomSpace, tying together
+/// the LG connector types to the AtomSpace connector types. This is
+/// the only reason for specifying an AtomSpace: to get back that info.
+///
+/// If the `LgDictNode` specified an AtomSpace-backed dictionary, and
+/// the fifth argument is present, then the dictionary word lookups
+/// will be performed from the specified StorageNode. Otherwise, if
+/// an AtomSpace is specified, but the StorageNode is not, the parser
+/// will use the AtomSpace contents only; the entire dictionary must
+/// be present in the AtomSpace.
 ///
 /// The LgParseLink is a kind of FunctionLink, and can thus be used in
 /// any expression that FunctionLinks can be used with.
