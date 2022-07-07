@@ -3,8 +3,8 @@ Link Grammar parsing
 ====================
 
 Perform a Link Grammar parse of a sentence, and insert the results into
-the AtomSpace.  This is compatible with the LG subset of the RelEx
-parse.
+the AtomSpace.  This was designed to be compatible with the LG subset of
+the RelEx parse. As of 2022, RelEx is obsolete and no longer supported.
 
 LgParseLink
 -----------
@@ -20,6 +20,8 @@ The expected format of an LgParseLink is:
         PhraseNode "this is a test."
         LgDictNode "en"
         NumberNode  6   -- optional, number of parses.
+        AtomSpace  foo  -- optional, AtomSpace holdig dict info.
+        StorageNode bar -- optional, StorageNode holding dict info.
 
 When executed, the result of parsing the phrase text, using the
 specified dictionary, is placed in the atomspace.  Execution
@@ -27,6 +29,20 @@ returns a SentenceNode pointing at the parse results.  If the third,
 optional NumberNode is present, then that will be the number of
 parses that are captured. If the NumberNode is not present, it
 defaults to four.
+
+If the `LgDictNode` specified an AtomSpace-backed dictionary, and
+the fourth argument is present, then the dictionary word lookups
+will be performed from the specified AtomSpace.  Note that
+`EvaluationLink`s will be created in that AtomSpace, tying together
+the LG connector types to the AtomSpace connector types. This is
+the only reason for specifying an AtomSpace: to get back that info.
+
+If the `LgDictNode` specified an AtomSpace-backed dictionary, and
+the fifth argument is present, then the dictionary word lookups
+will be performed from the specified `StorageNode`. Otherwise, if
+an AtomSpace is specified, but the `StorageNode` is not, the parser
+will use the AtomSpace contents only; the entire dictionary must
+be present in the AtomSpace.
 
 LgParseMinimal
 --------------
@@ -70,8 +86,8 @@ this means that there are two ways of getting parsed text into the
 atomspace: using this link, or using the RelEx server.  There are
 competing pros and cons of doing it each way:
 
-* The RelEx server is deprecated/obsolete. It still works, but there
-  no support for it any more. No bug-fixes, no active development.
+* The RelEx server is obsolete. It still works, but there no support
+  for it any more. No bug-fixes, no active development.
 
 * The RelEx server is a network server, and can be run on any
   network-connected machine.
