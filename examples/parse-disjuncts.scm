@@ -13,8 +13,6 @@
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog nlp) (opencog nlp lg-parse))
 
-(use-modules (srfi srfi-1))
-
 ; Parse an example sentence
 (cog-execute!
 	(LgParseDisjuncts    ; There is also a "full" parse, demoed elsewhere.
