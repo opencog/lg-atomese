@@ -46,8 +46,8 @@ namespace opencog
 ///          WordNode "foobar"
 ///          LgDictNode "en"
 ///
-/// Executing the above will look up the word in teh English
-/// dictionary, and place the contents into the atomspace.
+/// Executing the above will look up the word in the English
+/// dictionary, and place the contents into the AtomSpace.
 
 class LGDictEntry : public FunctionLink
 {
