@@ -24,12 +24,14 @@
 #include <atomic>
 #include <uuid/uuid.h>
 #include <link-grammar/link-includes.h>
+#include <link-grammar/dict-atomese.h>
 
 #include <opencog/atoms/atom_types/NameServer.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/core/NumberNode.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atomspace/AtomSpace.h>
+#include <opencog/persist/api/StorageNode.h>
 #include <opencog/nlp/lg-dict/LGDictNode.h>
 #include "LGParseLink.h"
 
@@ -42,6 +44,8 @@ void error_handler(lg_errinfo *ei, void *data);
 ///         PhraseNode "this is a test."
 ///         LgDictNode "en"
 ///         NumberNode  6   -- optional, number of parses.
+///         AtomSpace  foo  -- optional, AtomSpace holdig dict info.
+///         StorageNode bar -- optional, StorageNode holding dict info.
 ///
 /// When executed, the result of parsing the phrase text, using the
 /// specified dictionary, is placed in the atomspace.  Execution
@@ -49,6 +53,20 @@ void error_handler(lg_errinfo *ei, void *data);
 /// optional NumberNode is present, then that will be the number of
 /// parses that are captured. If the NumberNode is not present, it
 /// defaults to four.
+///
+/// If the `LgDictNode` specified an AtomSpace-backed dictionary, and
+/// the fourth argument is present, then the dictionary word lookups
+/// will be performed from the specified AtomSpace.  Note that
+/// EvaluationLinks will be created in that AtomSpace, tying together
+/// the LG connector types to the AtomSpace connector types. This is
+/// the only reason for specifying an AtomSpace: to get back that info.
+///
+/// If the `LgDictNode` specified an AtomSpace-backed dictionary, and
+/// the fifth argument is present, then the dictionary word lookups
+/// will be performed from the specified StorageNode. Otherwise, if
+/// an AtomSpace is specified, but the StorageNode is not, the parser
+/// will use the AtomSpace contents only; the entire dictionary must
+/// be present in the AtomSpace.
 ///
 /// The LgParseLink is a kind of FunctionLink, and can thus be used in
 /// any expression that FunctionLinks can be used with.
@@ -58,9 +76,9 @@ void LGParseLink::init()
 	const HandleSeq& oset = _outgoing;
 
 	size_t osz = oset.size();
-	if (2 != osz and 3 != osz)
+	if (2 > osz or 5 < osz)
 		throw InvalidParamException(TRACE_INFO,
-			"LGParseLink: Expecting two or three arguments, got %lu", osz);
+			"LGParseLink: Expecting two to five arguments, got %lu", osz);
 
 	Type pht = oset[0]->get_type();
 	if (PHRASE_NODE != pht and VARIABLE_NODE != pht and GLOB_NODE != pht)
@@ -74,13 +92,32 @@ void LGParseLink::init()
 			"LGParseLink: Expecting LgDictNode, got %s",
 			oset[1]->to_string().c_str());
 
-	if (3 == osz)
+	if (3 <= osz)
 	{
 		Type nit = oset[2]->get_type();
 		if (NUMBER_NODE != nit and VARIABLE_NODE != nit and GLOB_NODE != nit)
 			throw InvalidParamException(TRACE_INFO,
 				"LGParseLink: Expecting NumberNode, got %s",
 				oset[2]->to_string().c_str());
+	}
+
+	if (4 <= osz)
+	{
+		Type ast = oset[3]->get_type();
+		if (ATOM_SPACE != ast and VARIABLE_NODE != ast and GLOB_NODE != ast)
+			throw InvalidParamException(TRACE_INFO,
+				"LGParseLink: Expecting AtomSpace, got %s",
+				oset[3]->to_string().c_str());
+	}
+
+	if (5 <= osz)
+	{
+		Type stot = oset[4]->get_type();
+	   if (not nameserver().isA(stot, STORAGE_NODE)
+		    and VARIABLE_NODE != stot and GLOB_NODE != stot)
+		throw InvalidParamException(TRACE_INFO,
+				"LGParseLink: Expecting StorageNode, got %s",
+				oset[4]->to_string().c_str());
 	}
 }
 
@@ -127,21 +164,48 @@ LGParseDisjuncts::LGParseDisjuncts(const HandleSeq&& oset, Type t)
 
 ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 {
+	// By the time that we execute, the arguments must be concrete,
+	// actual things, and not VariableNodes, etc.
 	if (PHRASE_NODE != _outgoing[0]->get_type())
 		throw InvalidParamException(TRACE_INFO,
 			"LGParseLink: Invalid outgoing set at 0; expecting PhraseNode");
+
 	if (LG_DICT_NODE != _outgoing[1]->get_type())
 		throw InvalidParamException(TRACE_INFO,
 			"LGParseLink: Invalid outgoing set at 1; expecting LgDictNode");
-	if (3 == _outgoing.size() and
+
+	if (3 <= _outgoing.size() and
 	   NUMBER_NODE != _outgoing[2]->get_type())
 		throw InvalidParamException(TRACE_INFO,
 			"LGParseLink: Invalid outgoing set at 2; expecting NumberNode");
+
+	if (4 <= _outgoing.size() and
+	   ATOM_SPACE != _outgoing[3]->get_type())
+		throw InvalidParamException(TRACE_INFO,
+			"LGParseLink: Invalid outgoing set at 3; expecting AtomSpace");
+
+	if (5 <= _outgoing.size() and
+	   not nameserver().isA(_outgoing[4]->get_type(), STORAGE_NODE))
+		throw InvalidParamException(TRACE_INFO,
+			"LGParseLink: Invalid outgoing set at 4; expecting StorageNode");
 
 	// Link grammar, for some reason, has a different error handler
 	// per thread. Don't know why. So we have to set it every time,
 	// because we don't know what thread we are in.
 	lg_error_set_handler(error_handler, nullptr);
+
+	// Set up the dictionary config, if any.
+	// This must happen before ldn->get_dictionary() because the
+	// setup is stateful. This seems buggy, but is adequate for now.
+	if (4 <= _outgoing.size())
+	{
+		AtomSpacePtr asp = AtomSpaceCast(_outgoing[3]);
+		StorageNodePtr stnp;
+		if (5 <= _outgoing.size())
+			stnp = StorageNodeCast(_outgoing[4]);
+
+		lg_config_atomspace(asp, stnp);
+	}
 
 	// Get the dictionary
 	LgDictNodePtr ldn(LgDictNodeCast(_outgoing[1]));
