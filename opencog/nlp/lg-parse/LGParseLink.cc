@@ -113,7 +113,7 @@ void LGParseLink::init()
 	if (5 <= osz)
 	{
 		Type stot = oset[4]->get_type();
-	   if (not nameserver().isA(STORAGE_NODE, stot)
+	   if (not nameserver().isA(stot, STORAGE_NODE)
 		    and VARIABLE_NODE != stot and GLOB_NODE != stot)
 		throw InvalidParamException(TRACE_INFO,
 				"LGParseLink: Expecting StorageNode, got %s",
@@ -185,7 +185,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 			"LGParseLink: Invalid outgoing set at 3; expecting AtomSpace");
 
 	if (5 <= _outgoing.size() and
-	   not nameserver().isA(STORAGE_NODE, _outgoing[4]->get_type()))
+	   not nameserver().isA(_outgoing[4]->get_type(), STORAGE_NODE))
 		throw InvalidParamException(TRACE_INFO,
 			"LGParseLink: Invalid outgoing set at 4; expecting StorageNode");
 
