@@ -24,13 +24,14 @@
 #include <atomic>
 #include <uuid/uuid.h>
 #include <link-grammar/link-includes.h>
+#include <link-grammar/dict-atomese.h>
 
 #include <opencog/atoms/atom_types/NameServer.h>
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/core/NumberNode.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atomspace/AtomSpace.h>
-#include <opencog/persist/storage/storage_types.h>
+#include <opencog/persist/api/StorageNode.h>
 #include <opencog/nlp/lg-dict/LGDictNode.h>
 #include "LGParseLink.h"
 
@@ -192,6 +193,19 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// per thread. Don't know why. So we have to set it every time,
 	// because we don't know what thread we are in.
 	lg_error_set_handler(error_handler, nullptr);
+
+	// Set up the dictionary config, if any.
+	// This must happen before ldn->get_dictionary() because the
+	// setup is stateful. This seems buggy, but is adequate for now.
+	if (4 <= _outgoing.size())
+	{
+		AtomSpacePtr asp = AtomSpaceCast(_outgoing[3]);
+		StorageNodePtr stnp;
+		if (5 <= _outgoing.size())
+			stnp = StorageNodeCast(_outgoing[4]);
+
+		lg_config_atomspace(asp, stnp);
+	}
 
 	// Get the dictionary
 	LgDictNodePtr ldn(LgDictNodeCast(_outgoing[1]));
