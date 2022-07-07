@@ -33,7 +33,9 @@ using namespace opencog;
 
 // ------------------------------------------------------
 // Convert LG errors to opencog log messges
-static void error_handler(lg_errinfo *ei, void *data)
+// Not static, its also used by LgParseNode.cc
+void error_handler(lg_errinfo *ei, void *data);
+void error_handler(lg_errinfo *ei, void *data)
 {
 	if (lg_Fatal == ei->severity or lg_Error == ei->severity)
 		logger().error("%s", ei->text);
