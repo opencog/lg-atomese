@@ -231,7 +231,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 	// The number of linkages to process.
 	int max_linkages = 0;
-	if (3 == _outgoing.size())
+	if (3 <= _outgoing.size())
 	{
 		NumberNodePtr nnp(NumberNodeCast(_outgoing[2]));
 		max_linkages = nnp->get_value() + 0.5;
