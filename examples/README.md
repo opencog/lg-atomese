@@ -12,3 +12,5 @@ to parsee sentences.  A basic familiarity with Link Grammar is assumed.
 * `network-server.scm` and `network-client.scm` -- A pair of examples,
   implementing a server that performs parsing, and the client to
   communicate to the server.
+
+* `tools.scm` -- An assortment of minor debuggin utilities.
