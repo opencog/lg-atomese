@@ -6,7 +6,7 @@ INCLUDE_DIRECTORIES (
 )
 
 ADD_LIBRARY (lg-parse SHARED
-	LGParseLink
+	LGParseLink.cc
 )
 
 ADD_DEPENDENCIES (lg-parse nlp_atom_types)

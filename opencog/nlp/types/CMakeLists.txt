@@ -13,8 +13,8 @@ ADD_CUSTOM_TARGET(nlp_atom_types DEPENDS atom_types.h)
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 ADD_LIBRARY (nlp-types SHARED
-	atom_types
-	NLPTypes
+	atom_types.h
+	NLPTypes.cc
 )
 
 TARGET_LINK_LIBRARIES(nlp-types

@@ -5,15 +5,15 @@ INCLUDE_DIRECTORIES (
 )
 
 ADD_LIBRARY (lg-dict-entry SHARED
-	LGDictExpContainer
-	LGDictReader
-	LGDictUtils
-	LGDictNode
-	LGDictEntry
+	LGDictExpContainer.cc
+	LGDictReader.cc
+	LGDictUtils.cc
+	LGDictNode.cc
+	LGDictEntry.cc
 )
 
 ADD_LIBRARY (lg-dict SHARED
-	LGDictSCM
+	LGDictSCM.cc
 )
 
 ADD_DEPENDENCIES (lg-dict-entry nlp_atom_types)
