@@ -113,7 +113,7 @@ IF (UUID_FOUND)
 	INCLUDE_DIRECTORIES(${UUID_INCLUDE_DIRS})
 	ADD_DEFINITIONS(${UUID_DEFINITIONS})
 ELSE (UUID_FOUND)
-	MESSAGE(STATUS "UUID library missing: needed for NLP.")
+	MESSAGE(FATAL_ERROR "UUID library missing: needed for NLP.\nDid you forget to install `uuid-dev`?")
 ENDIF (UUID_FOUND)
 
 # ----------------------------------------------------------
