@@ -24,7 +24,9 @@
 #include <atomic>
 #include <uuid/uuid.h>
 #include <link-grammar/link-includes.h>
+#if LINK_MAJOR_VERSION == 5 && LINK_MINOR_VERSION >= 11
 #include <link-grammar/dict-atomese.h>
+#endif
 
 #include <opencog/atoms/atom_types/NameServer.h>
 #include <opencog/atoms/base/Node.h>
@@ -194,6 +196,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// because we don't know what thread we are in.
 	lg_error_set_handler(error_handler, nullptr);
 
+#if LINK_MAJOR_VERSION == 5 && LINK_MINOR_VERSION >= 11
 	// Set up the dictionary config, if any.
 	// This must happen before ldn->get_dictionary() because the
 	// setup is stateful. This seems buggy, but is adequate for now.
@@ -206,6 +209,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 		lg_config_atomspace(asp, stnp);
 	}
+#endif
 
 	// Get the dictionary
 	LgDictNodePtr ldn(LgDictNodeCast(_outgoing[1]));
