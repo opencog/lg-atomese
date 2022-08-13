@@ -14,6 +14,7 @@ ADD_DEPENDENCIES (lg-parse nlp_atom_types)
 TARGET_LINK_LIBRARIES (lg-parse
 	lg-dict-entry
 	nlp-types
+	${ATOMSPACE_persist_LIBRARY}
 	${ATOMSPACE_smob_LIBRARY}
 	${LINK_GRAMMAR_LIBRARY}
 	${UUID_LIBRARIES}
