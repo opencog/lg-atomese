@@ -360,26 +360,28 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
                                 const char* phrstr,
                                 bool minimal, AtomSpace* as) const
 {
-	char parseid[80];
-	snprintf(parseid, 80, "%s_parse_%d", idstr, i);
-	Handle pnode(as->add_node(PARSE_NODE, parseid));
+	std::string parseid = idstr;
+	parseid += "_parse_";
+	parseid += std::to_string(i);
+	Handle pnode(as->add_node(PARSE_NODE, std::move(parseid)));
 
 	// Loop over all the words.
 	HandleSeq wrds;
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		// Get the word in the sentence.
-		const char* wrd = get_word_string(lkg, w, phrstr);
-
 		// Generate a unique UUID for that word.
 		uuid_t uu2;
 		uuid_generate(uu2);
 		char idstr2[37];
 		uuid_unparse(uu2, idstr2);
-		char buff[801] = "";
-		snprintf(buff, sizeof(buff), "%s@%s", wrd, idstr2);
-		Handle winst(as->add_node(WORD_INSTANCE_NODE, buff));
+
+		// Get the word in the sentence.
+		const char* wrd = get_word_string(lkg, w, phrstr);
+		std::string buff = wrd;
+		buff += "@";
+		buff += idstr2;
+		Handle winst(as->add_node(WORD_INSTANCE_NODE, std::move(buff)));
 		wrds.push_back(winst);
 
 		// Associate the word with the parse.
@@ -419,9 +421,12 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 		if (minimal) continue;
 
 		// The link instance.
-		char buff[140];
-		snprintf(buff, 140, "%s@%s-link-%d", label, parseid, lk);
-		Handle linst(as->add_node(LG_LINK_INSTANCE_NODE, buff));
+		std::string buff = label;
+		buff += "@";
+		buff += parseid;
+		buff += "-link-";
+		buff += std::to_string(lk);
+		Handle linst(as->add_node(LG_LINK_INSTANCE_NODE, std::move(buff)));
 		as->add_link(EVALUATION_LINK, linst, lst);
 
 		// The relation between link and link instance

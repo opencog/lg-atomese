@@ -33,6 +33,11 @@
 	(format port " [~D];\n" (cog-count sect)))
 
 ; Print a list of disjuncts
+;
+; Example usage:
+; (define pda (LgParseDisjuncts ...))
+; (prt-sect-list #t (cog-value->list (cog-execute! pda)))
+;
 (define (prt-sect-list port scl)
 	(prt-sect port (car scl))
 	(if (not (nil? (cdr scl)))
