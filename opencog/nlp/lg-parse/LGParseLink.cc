@@ -271,6 +271,13 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	{
 		sentence_delete(sent);
 		parse_options_delete(opts);
+
+		// Sentence too long.
+		if (-2 == num_linkages)
+			throw RuntimeException(TRACE_INFO,
+				"LGParseLink: Sentence too long >>%s<<", phrstr);
+
+		// I don't know what would cause this...
 		throw FatalErrorException(TRACE_INFO,
 			"LGParseLink: Unexpected parser error while parsing >>%s<<", phrstr);
 	}
