@@ -545,7 +545,7 @@ const char* LGParseLink::get_word_string(Linkage lkg, int w,
 		size_t len = eb-sb;
 		if (BUFSZ <= len)
 			throw FatalErrorException(TRACE_INFO,
-				"LGParseLink: Unexpectly long word; length=%lu", len);
+				"LGParseLink: Unexpectedly long word; length=%lu", len);
 
 		strncpy(buff, phrstr + sb, len);
 		buff[len] = 0;
