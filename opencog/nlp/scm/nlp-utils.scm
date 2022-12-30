@@ -1,16 +1,12 @@
 ;
 ; nlp-utils.scm
 ;
-;;; Commentary:
-;
 ; Assorted NLP utilities.  Operations include:
 ; -- getting the various parses of a sentence
 ; -- getting the words in a parse
 ; -- getting assorted word properties
-; -- deleting all atoms pertaining to a sentence
 ;
 ; The function names that can be found here are:
-; -- document-get-sentences Get sentences in document.
 ; -- sentence-get-parses    Get parses of a sentence.
 ; -- sent-list-get-parses   Get parses of a list of sentences.
 ; -- sent-get-words-in-order  Get all words occurring in a sentence in order.
@@ -40,21 +36,6 @@
 
 (use-modules (srfi srfi-1))
 (use-modules (opencog))
-
-; ---------------------------------------------------------------------
-(define-public (document-get-sentences DOCO)
-"
-  document-get-sentences DOCO -- Get sentences in document DOCO
-
-  Given a document DOCO, return a list of sentences in that document.
-  Throws an error if DOCO is not a DocumentNode
-"
-	(if (eq? (cog-type DOCO) 'DocumentNode)
-		(cog-get-reference DOCO)
-		(throw 'wrong-atom-type 'document-get-sentences
-			"Error: expecting DocumentNode:" DOCO)
-	)
-)
 
 ; ---------------------------------------------------------------------
 (define-public (sentence-get-parses sent-node)
