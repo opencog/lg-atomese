@@ -10,12 +10,12 @@
 ; -- deleting all atoms pertaining to a sentence
 ;
 ; The function names that can be found here are:
-; -- document-get-sentences Get senteces in document.
+; -- document-get-sentences Get sentences in document.
 ; -- sentence-get-parses    Get parses of a sentence.
 ; -- sent-list-get-parses   Get parses of a list of sentences.
-; -- sent-get-words-in-order  Get all words occuring in a sentence in order.
-; -- parse-get-words        Get all words occuring in a parse.
-; -- parse-get-words-in-order  Get all words occuring in a parse in order.
+; -- sent-get-words-in-order  Get all words occurring in a sentence in order.
+; -- parse-get-words        Get all words occurring in a parse.
+; -- parse-get-words-in-order  Get all words occurring in a parse in order.
 ; -- parse-get-links        Get all LG links in a parse.
 ; -- word-inst-get-parse    Return the ParseNode associated with word-inst.
 ; -- word-inst-get-number   Return the NumberNode associated with word-inst.
@@ -29,7 +29,7 @@
 ; do processing not in scheme, but in OpenCog itself, using pattern
 ; matching. The reason for this is so that we can apply OpenCog learning
 ; algos to learn new ways of processing. Many/most of the utilities below
-; could be implemented by using pattern maching. Code that depends on these
+; could be implemented by using pattern matching. Code that depends on these
 ; utilities should be converted to use pattern matching as soon as reasonable.
 ; Code that cannot be converted will eventually (in the distant future ...)
 ; become obsolete.
@@ -44,7 +44,7 @@
 ; ---------------------------------------------------------------------
 (define-public (document-get-sentences DOCO)
 "
-  document-get-sentences DOCO -- Get senteces in document DOCO
+  document-get-sentences DOCO -- Get sentences in document DOCO
 
   Given a document DOCO, return a list of sentences in that document.
   Throws an error if DOCO is not a DocumentNode
@@ -124,7 +124,7 @@
 "
   parse-get-words - Return a list of all word-instances in the parse.
 
-  Given a parse, return all word instances in arbitary order
+  Given a parse, return all word instances in arbitrary order
   This version is faster than the ordered version.
 "
 	(cog-chase-link 'WordInstanceLink 'WordInstanceNode parse-node)
