@@ -8,8 +8,6 @@
 ;
 ; The function names that can be found here are:
 ; -- sentence-get-parses    Get parses of a sentence.
-; -- sent-list-get-parses   Get parses of a list of sentences.
-; -- sent-get-words-in-order  Get all words occurring in a sentence in order.
 ; -- parse-get-words        Get all words occurring in a parse.
 ; -- parse-get-words-in-order  Get all words occurring in a parse in order.
 ; -- parse-get-links        Get all LG links in a parse.
@@ -47,29 +45,6 @@
   Throws an error if sent-node is not a SentenceNode
 "
 	(cog-chase-link-chk 'ParseLink 'ParseNode sent-node 'SentenceNode)
-)
-
-; -----------------------------------------------------------------------
-(define-public (sent-list-get-parses sent-list)
-"
-  sent-list-get-parses   Get parses of a list of sentences.
-
-  Given a list of sentences, return a list of parses of those sentences.
-  That is, given a List of SentenceNode's, return a list of ParseNode's
-  associated with those sentences.
-"
-	(concatenate! (map sentence-get-parses sent-list))
-)
-
-; ---------------------------------------------------------------------
-(define-public (sent-get-words-in-order sent-node)
-"
-  sent-get-words-in-order - Given a sentence, return a list of all
-  of the word-instances in each parse, in order.
-
-  Given a sentence, return all word instances in order
-"
-	(map parse-get-words-in-order (sentence-get-parses sent-node))
 )
 
 ; ---------------------------------------------------------------------
