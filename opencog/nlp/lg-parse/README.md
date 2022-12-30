@@ -18,9 +18,9 @@ The expected format of an LgParseLink is:
 
     LgParseLink
         PhraseNode "this is a test."
-        LgDictNode "en"
+        LgDictNode "en" -- or any other valid dictionary name.
         NumberNode  6   -- optional, number of parses.
-        AtomSpace  foo  -- optional, AtomSpace holdig dict info.
+        AtomSpace  foo  -- optional, AtomSpace holding dict info.
         StorageNode bar -- optional, StorageNode holding dict info.
 
 When executed, the result of parsing the phrase text, using the
@@ -83,7 +83,7 @@ Pros and Cons
 -------------
 Since this provides a format compatible with the RelEx parse server,
 this means that there are two ways of getting parsed text into the
-atomspace: using this link, or using the RelEx server.  There are
+AtomSpace: using this link, or using the RelEx server.  There are
 competing pros and cons of doing it each way:
 
 * The RelEx server is obsolete. It still works, but there no support
@@ -93,7 +93,7 @@ competing pros and cons of doing it each way:
   network-connected machine.
 
 * If you want to have a networked LG parser server, you can do this
-  with the `CogStoraeNode`. See the examples directory.
+  with the `CogStorageNode`. See the examples directory.
 
 * The RelEx server generates scheme strings, which must be parsed by
   the scheme interpreter in OpenCog. This adds a lot of overhead, and
