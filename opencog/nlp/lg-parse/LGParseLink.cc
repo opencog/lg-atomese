@@ -527,7 +527,7 @@ void LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	}
 }
 
-/// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir
+/// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir.
 HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 {
 	// This requires parsing a string. Fortunately, the
@@ -548,7 +548,7 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 		char cstr[60];
 		if (60 <= len)
 			throw RuntimeException(TRACE_INFO,
-				"LGParseLink: Dictionary has a bug; Uuexpectedly long connector=%s", djstr);
+				"LGParseLink: Dictionary has a bug; Unexpectedly long connector=%s", djstr);
 		strncpy(cstr, p, len);
 		cstr[len] = 0;
 		Handle con(createNode(LG_CONN_NODE, cstr));
@@ -566,6 +566,46 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 			cono.push_back(mu);
 		}
 		Handle conl(createLink(std::move(cono), LG_CONNECTOR));
+		conseq.push_back(conl);
+	}
+
+	return conseq;
+}
+
+/// Convert the disjunct to Section-style Atomese, using ConnectorLink
+/// and ConnectorDir. Similar to `make_lg_conseq` except that this uses
+/// the generic connector style, and uses words, not link types, for the
+/// connectors.
+HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
+{
+	// This requires parsing a string. Fortunately, the
+	// string is a very simple format.
+	const char* djstr = linkage_get_disjunct_str(lkg, w);
+
+	HandleSeq conseq;
+	const char* p = djstr;
+	while (*p)
+	{
+		while (' ' == *p) p++;
+		if (0 == *p) break;
+		if ('@' == *p) p++;  // Ignore multi's
+		const char* s = strchr(p, ' ');
+		size_t len = s-p-1;
+		if (NULL == s) len = strlen(p) - 1;
+		char cstr[60];
+		if (60 <= len)
+			throw RuntimeException(TRACE_INFO,
+				"LGParseLink: Dictionary has a bug; Unexpectedly long connector=%s", djstr);
+		strncpy(cstr, p, len);
+		cstr[len] = 0;
+//xxxx
+		Handle con(createNode(WORD_NODE, cstr));
+		cstr[0] = *(p+len);
+		cstr[1] = 0;
+		Handle dir(createNode(CONNECTOR_DIR_NODE, cstr));
+		p = p+len+1;
+
+		Handle conl(createLink(LG_CONNECTOR, con, dir));
 		conseq.push_back(conl);
 	}
 
