@@ -17,8 +17,6 @@
 ; -- word-inst-get-number   Return the NumberNode associated with word-inst.
 ; -- word-inst-get-word     Return the WordNode associated with word-inst.
 ; -- word-inst-get-links    Get all LG links involving word-inst.
-; -- word-inst-get-cset     Get the connector-set used for a word-inst.
-; -- word-inst-get-disjunct Get the disjunct (LgAnd) used for a word-inst.
 ;
 ;
 ; Important Design Note: A long-term goal of NLP within opencog is to
@@ -192,29 +190,6 @@
   with the WordInstance in either the first or the second place.
 "
 	(cog-get-pred word-inst 'LgLinkNode)
-)
-
-; ---------------------------------------------------------------------
-(define-public (word-inst-get-cset word-inst)
-"
-  word-inst-get-cset -- Get the connector set (LgWordCset) attached
-  to the word-inst.  For example, this returns
-
-  (LgWordCset
-      (WordInstanceNode 'foobar@62e9c582-1984')
-      (LgAnd ..))
-"
-	(car (filter!
-		(lambda (x) (eq? (cog-type x) 'LgWordCset))
-		(cog-incoming-set word-inst)))
-)
-
-; ---------------------------------------------------------------------
-(define-public (word-inst-get-disjunct word-inst)
-"
-  word-inst-get-disjunct -- Get the disjunct (LgAnd) used for a word-inst.
-"
-	(car (cog-chase-link 'LgWordCset 'LgAnd word-inst))
 )
 
 ; =============================================================
