@@ -55,6 +55,7 @@ LG_DICT_ENTRY <- FUNCTION_LINK
 LG_PARSE_LINK <- FUNCTION_LINK
 LG_PARSE_MINIMAL <- LG_PARSE_LINK
 LG_PARSE_DISJUNCTS <- LG_PARSE_LINK
+LG_PARSE_SECTIONS <- LG_PARSE_LINK
 
 // Connector: same meaning and syntax as in link-grammar, except that
 // the direction and the multi-connector parts get distinct types.
