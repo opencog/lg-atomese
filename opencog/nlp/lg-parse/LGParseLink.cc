@@ -420,7 +420,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 		if (minimal) continue;
 
 		// Convert the disjunct to atomese.
-		HandleSeq conseq = make_conseq(lkg, w);
+		HandleSeq conseq = make_lg_conseq(lkg, w);
 
 		if (0 == conseq.size()) continue;
 
@@ -482,7 +482,7 @@ void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		HandleSeq conseq = make_conseq(lkg, w);
+		HandleSeq conseq = make_lg_conseq(lkg, w);
 		if (0 == conseq.size()) continue;
 
 		const char* wrd = get_word_string(lkg, w, phrstr);
@@ -510,7 +510,7 @@ void LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		HandleSeq conseq = make_conseq(lkg, w);
+		HandleSeq conseq = make_lg_conseq(lkg, w);
 		if (0 == conseq.size()) continue;
 
 		const char* wrd = get_word_string(lkg, w, phrstr);
@@ -527,8 +527,8 @@ void LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	}
 }
 
-/// Convert the disjunct to atomese.
-HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
+/// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir
+HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 {
 	// This requires parsing a string. Fortunately, the
 	// string is a very simple format.

@@ -49,7 +49,7 @@ class LGParseLink : public FunctionLink
 protected:
 	void init();
 	const char* get_word_string(Linkage, int, const char*) const;
-	HandleSeq make_conseq(Linkage, int) const;
+	HandleSeq make_lg_conseq(Linkage, int) const;
 	void make_djs(Linkage, const char*, AtomSpace*, HandleSet&) const;
 	void make_sects(Linkage, const char*, AtomSpace*, HandleSet&) const;
 	Handle cvt_linkage(Linkage, int, const char*, const char*,
