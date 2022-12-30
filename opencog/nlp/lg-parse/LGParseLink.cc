@@ -337,6 +337,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// want them. (The extra Atoms describe disjuncts, etc.)
 	bool minimal = (get_type() == LG_PARSE_MINIMAL);
 	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
+	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
 	HandleSet djs;
 
 	// There are only so many parses available.
@@ -349,7 +350,11 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		if (0 < sentence_num_violations(sent, i)) continue;
 		jct ++;
 		Linkage lkg = linkage_create(i, sent, opts);
-		if (djonly)
+		if (sectonly)
+		{
+			make_sects(lkg, phrstr, as, djs);
+		}
+		else if (djonly)
 		{
 			make_djs(lkg, phrstr, as, djs);
 		}
@@ -367,7 +372,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	lg_error_clearall();
 
 	// Return a LinkValue holding all of the disjuncts
-	if (djonly)
+	if (sectonly or djonly)
 		return createLinkValue(djs);
 
 	return snode;
@@ -486,6 +491,34 @@ void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 		Handle dj = as->add_link(LG_DISJUNCT,
 			as->add_node(WORD_NODE, wrd),
 			as->add_link(LG_AND, std::move(conseq)));
+
+		// Increment by exactly one, every time it appears.
+		dj = as->increment_countTV(dj);
+
+		djs.insert(dj);
+	}
+}
+
+// Create only the Sections for the parse, and nothing else.
+// Sections are almost exactly like Disjuncts, but have a
+// different format.
+void LGParseLink::make_sects(Linkage lkg, const char* phrstr,
+                             AtomSpace* as, HandleSet& djs) const
+{
+	// Loop over all the words.
+	HandleSeq wrds;
+	int nwords = linkage_get_num_words(lkg);
+	for (int w=0; w<nwords; w++)
+	{
+		HandleSeq conseq = make_conseq(lkg, w);
+		if (0 == conseq.size()) continue;
+
+		const char* wrd = get_word_string(lkg, w, phrstr);
+
+		// Set up the disjuncts on each word
+		Handle dj = as->add_link(SECTION,
+			as->add_node(WORD_NODE, wrd),
+			as->add_link(CONNECTOR_SEQ, std::move(conseq)));
 
 		// Increment by exactly one, every time it appears.
 		dj = as->increment_countTV(dj);
