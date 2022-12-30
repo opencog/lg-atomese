@@ -14,11 +14,9 @@
 ; -- sentence-get-parses    Get parses of a sentence.
 ; -- sent-list-get-parses   Get parses of a list of sentences.
 ; -- sent-get-words-in-order  Get all words occuring in a sentence in order.
-; -- sent-get-interp Get all the InterpretationNodes of a sentence.
 ; -- parse-get-words        Get all words occuring in a parse.
 ; -- parse-get-words-in-order  Get all words occuring in a parse in order.
 ; -- parse-get-links        Get all LG links in a parse.
-; -- interp-get-parse       Get the Interpretation of a Parse.
 ; -- word-inst-get-parse    Return the ParseNode associated with word-inst.
 ; -- word-inst-get-number   Return the NumberNode associated with word-inst.
 ; -- word-inst-get-word     Return the WordNode associated with word-inst.
@@ -126,16 +124,6 @@
 )
 
 ; ---------------------------------------------------------------------
-(define-public (sent-get-interp sent-node)
-"
-  sent-get-interp - Given a SentenceNode returns a list of InterpretationNodes
-
-  XXX fix-me -- might this not be parse-dependent???
-"
-    (parse-get-interp (car (sentence-get-parses sent-node)))
-)
-
-; ---------------------------------------------------------------------
 (define-public (parse-get-words parse-node)
 "
   parse-get-words - Return a list of all word-instances in the parse.
@@ -160,26 +148,6 @@
 		(< (get-number word-inst-1) (get-number word-inst-2)))
 
 	(sort (parse-get-words PARSE) less-than)
-)
-
-; --------------------------------------------------------------------
-(define-public (parse-get-interp parse-node)
-"
-  parse-get-interp    Get the interpretations of the parse.
-
-  Returns the InterpretationNodes associated with a ParseNode.
-"
-    (cog-chase-link 'InterpretationLink 'InterpretationNode parse-node)
-)
-
-; --------------------------------------------------------------------
-(define-public (interp-get-parse interp)
-"
-  interp-get-parse    Get the parse that resulted in the given interpretation.
-
-  Returns the ParseNode associated with an InterpretationNode.
-"
-	(car (cog-chase-link 'InterpretationLink 'ParseNode interp))
 )
 
 ; ---------------------------------------------------------------------
