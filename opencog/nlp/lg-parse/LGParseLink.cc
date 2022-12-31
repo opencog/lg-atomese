@@ -338,7 +338,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	bool minimal = (get_type() == LG_PARSE_MINIMAL);
 	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
 	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
-	HandleSet djs;
+	ValueSeq vlist;
 
 	// There are only so many parses available.
 	int num_available = sentence_num_linkages_post_processed(sent);
@@ -352,11 +352,11 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		Linkage lkg = linkage_create(i, sent, opts);
 		if (sectonly)
 		{
-			make_sects(lkg, phrstr, as, djs);
+			vlist.emplace_back(make_sects(lkg, phrstr, as));
 		}
 		else if (djonly)
 		{
-			make_djs(lkg, phrstr, as, djs);
+			vlist.emplace_back(make_djs(lkg, phrstr, as));
 		}
 		else
 		{
@@ -373,7 +373,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 	// Return a LinkValue holding all of the disjuncts
 	if (sectonly or djonly)
-		return createLinkValue(djs);
+		return createLinkValue(vlist);
 
 	return snode;
 }
@@ -474,11 +474,12 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 }
 
 // Create only the disjuncts for the parse, and nothing else.
-void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
-                           AtomSpace* as, HandleSet& djs) const
+ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
+                               AtomSpace* as) const
 {
+	HandleSet djs;
+
 	// Loop over all the words.
-	HandleSeq wrds;
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
@@ -497,16 +498,18 @@ void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 
 		djs.insert(dj);
 	}
+	return createLinkValue(djs);
 }
 
 // Create only the Sections for the parse, and nothing else.
 // Sections are almost exactly like Disjuncts, but have a
 // different format.
-void LGParseLink::make_sects(Linkage lkg, const char* phrstr,
-                             AtomSpace* as, HandleSet& djs) const
+ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
+                                 AtomSpace* as) const
 {
+	HandleSet djs;
+
 	// Loop over all the words.
-	HandleSeq wrds;
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
@@ -525,6 +528,8 @@ void LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 
 		djs.insert(dj);
 	}
+
+	return createLinkValue(djs);
 }
 
 /// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir.
