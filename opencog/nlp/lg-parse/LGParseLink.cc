@@ -477,7 +477,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
                                AtomSpace* as) const
 {
-	HandleSet djs;
+	HandleSeq djs;
 
 	// Loop over all the words.
 	int nwords = linkage_get_num_words(lkg);
@@ -493,10 +493,7 @@ ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 			as->add_node(WORD_NODE, wrd),
 			as->add_link(LG_AND, std::move(conseq)));
 
-		// Increment by exactly one, every time it appears.
-		dj = as->increment_countTV(dj);
-
-		djs.insert(dj);
+		djs.emplace_back(dj);
 	}
 	return createLinkValue(djs);
 }
@@ -507,7 +504,7 @@ ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
                                  AtomSpace* as) const
 {
-	HandleSet djs;
+	HandleSeq djs;
 
 	// Loop over all the words.
 	int nwords = linkage_get_num_words(lkg);
@@ -523,10 +520,7 @@ ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 			as->add_node(WORD_NODE, wrd),
 			as->add_link(CONNECTOR_SEQ, std::move(conseq)));
 
-		// Increment by exactly one, every time it appears.
-		dj = as->increment_countTV(dj);
-
-		djs.insert(dj);
+		djs.emplace_back(dj);
 	}
 
 	return createLinkValue(djs);
