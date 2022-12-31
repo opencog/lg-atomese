@@ -351,6 +351,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	bool minimal = (get_type() == LG_PARSE_MINIMAL);
 	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
 	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
+	bool bondonly = (get_type() == LG_PARSE_BONDS);
 	ValueSeq vlist;
 
 	// There are only so many parses available.
@@ -366,6 +367,10 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		if (sectonly)
 		{
 			vlist.emplace_back(make_sects(lkg, phrstr, as));
+		}
+		else if (bondonly)
+		{
+			vlist.emplace_back(make_bonds(lkg, phrstr, as));
 		}
 		else if (djonly)
 		{
@@ -537,6 +542,36 @@ ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	}
 
 	return createLinkValue(djs);
+}
+
+// Create only the EvaluationLink-BondNodes for the parse.
+// These are just the links in the linkage.
+ValuePtr LGParseLink::make_bonds(Linkage lkg, const char* phrstr,
+                                 AtomSpace* as) const
+{
+	HandleSeq bonds;
+
+	// Loop over all the links.
+	int nlinks = linkage_get_num_links(lkg);
+	for (int lk=0; lk<nlinks; lk++)
+	{
+		int lword = linkage_get_link_lword(lkg, lk);
+		int rword = linkage_get_link_rword(lkg, lk);
+
+		// Get the words at either end.
+		Handle lst(as->add_link(LIST_LINK,
+			as->add_node(WORD_NODE, get_word_string(lkg, lword, phrstr)),
+			as->add_node(WORD_NODE, get_word_string(lkg, rword, phrstr))));
+
+		// The bond type.
+		const char* label = linkage_get_link_label(lkg, lk);
+		Handle brel(as->add_node(BOND_NODE, label));
+
+		Handle bond(as->add_link(EVALUATION_LINK, brel, lst));
+		bonds.emplace_back(bond);
+	}
+
+	return createLinkValue(bonds);
 }
 
 /// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir.

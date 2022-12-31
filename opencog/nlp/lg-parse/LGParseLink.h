@@ -53,6 +53,7 @@ protected:
 	HandleSeq make_conseq(Linkage, int, const char*, AtomSpace*) const;
 	ValuePtr make_djs(Linkage, const char*, AtomSpace*) const;
 	ValuePtr make_sects(Linkage, const char*, AtomSpace*) const;
+	ValuePtr make_bonds(Linkage, const char*, AtomSpace*) const;
 	Handle cvt_linkage(Linkage, int, const char*, const char*,
 	                   bool, AtomSpace*) const;
 
