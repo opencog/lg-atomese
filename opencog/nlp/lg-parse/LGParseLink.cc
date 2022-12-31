@@ -330,21 +330,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 	// Takes limit from parameter only if it's positive and smaller
 	if ((max_linkages > 0) && (max_linkages < num_linkages))
-	{
 		num_linkages = max_linkages;
-	}
-
-	// Hmm. I hope that uuid_generate() won't block if there is not
-	// enough entropy in the entropy pool....
-	uuid_t uu;
-	uuid_generate(uu);
-	char idstr[37];
-	uuid_unparse(uu, idstr);
-
-	char sentstr[sizeof(idstr) + 10] = "sentence@";
-	strcat(sentstr, idstr);
-
-	Handle snode(as->add_node(SENTENCE_NODE, sentstr));
 
 	// Avoid generating big piles of Atoms, if the user did not
 	// want them. (The extra Atoms describe disjuncts, etc.)
@@ -353,6 +339,22 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
 	bool bondonly = (get_type() == LG_PARSE_BONDS);
 	ValueSeq vlist;
+
+	// Create the SentenceNode only for the old-style output
+	Handle snode;
+	if (not (sectonly or bondonly or djonly))
+	{
+		// Hmm. I hope that uuid_generate() won't block if there is not
+		// enough entropy in the entropy pool....
+		uuid_t uu;
+		uuid_generate(uu);
+		char idstr[37];
+		uuid_unparse(uu, idstr);
+
+		char sentstr[sizeof(idstr) + 10] = "sentence@";
+		strcat(sentstr, idstr);
+		snode = as->add_node(SENTENCE_NODE, sentstr);
+	}
 
 	// There are only so many parses available.
 	int num_available = sentence_num_linkages_post_processed(sent);
@@ -390,7 +392,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	lg_error_clearall();
 
 	// Return a LinkValue holding all of the disjuncts
-	if (sectonly or djonly)
+	if (sectonly or bondonly or djonly)
 		return createLinkValue(vlist);
 
 	return snode;
