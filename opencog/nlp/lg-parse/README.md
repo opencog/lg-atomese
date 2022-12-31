@@ -3,11 +3,18 @@ Link Grammar parsing
 ====================
 
 Perform a Link Grammar parse of a sentence, and insert the results into
-the AtomSpace.  This was designed to be compatible with the LG subset of
-the RelEx parse. As of 2022, RelEx is obsolete and no longer supported.
+the AtomSpace.  Two of the provided functions were designed to be
+compatible with the LG subset of the RelEx parse. Two others are more
+modern and easier to use. As of 2018, RelEx is obsolete and no longer
+supported, and so this provides a suitable upgrade path for that format.
+
+Full documentation for the output format is here:
+https://wiki.opencog.org/w/Sentence_representation
 
 LgParseLink
 -----------
+https://wiki.opencog.org/w/LgParseLink
+
 Parsing is performed by calling the `execute()` method on the C++ class
 LgParseLink, or equivalently, calling the scheme function `cog-execute!`
 on it.  The LgParseLink is a kind of FunctionLink, and can thus be used
@@ -44,8 +51,12 @@ an AtomSpace is specified, but the `StorageNode` is not, the parser
 will use the AtomSpace contents only; the entire dictionary must
 be present in the AtomSpace.
 
+The format is documented at https://
+
 LgParseMinimal
 --------------
+https://wiki.opencog.org/w/LgParseMinimal
+
 This performs the same parse as `LgParseLink`; however, it does not
 insert the resulting disjuncts into the AtomSpace. As the disjuncts
 are quite verbose, this significantly reduces the number of atoms
@@ -53,11 +64,19 @@ placed in the AtomSpace.
 
 LgParseDisjuncts
 ----------------
-This performs the same parse as `LgParseLink`; however, it does not
-insert the resulting word instances and linkages into the AtomSpace;
-instead, it ONLY inserts the disjuncts.  As the linkages are quite
-verbose, this significantly reduces the number of atoms placed in
-the AtomSpace.
+https://wiki.opencog.org/w/LgParseDisjuncts
+
+This returns a LinkValue holding the different parses; each parse is a
+LinkValue for the disjuncts in that parse, in sequence. This has the
+advantage of being easier to use than the rather clunky RelEx format.
+Also, it avoids the creation of WordInstances, and thus significantly
+reduces the number of atoms placed in the AtomSpace.
+
+LgParseSections
+---------------
+https://wiki.opencog.org/w/LgParseSections
+
+Same as above, but creates Sections instead of disjuncts.
 
 Example
 -------
@@ -79,11 +98,15 @@ live off the default options that Link Grammar provides.  At this time,
 it is not envisioned that there will ever be any need to expand beyond
 this minimalist API.
 
-Pros and Cons
--------------
-Since this provides a format compatible with the RelEx parse server,
+RelEx Compatibility
+-------------------
+The LgParse and LgParseMinimal formats are backwards-compatible with
+the RelEx system. The other formats are not; they're more modern and
+easier to use.
+
+Since the provided format is compatible with the RelEx parse server,
 this means that there are two ways of getting parsed text into the
-AtomSpace: using this link, or using the RelEx server.  There are
+AtomSpace: using these two links, or using the RelEx server.  There are
 competing pros and cons of doing it each way:
 
 * The RelEx server is obsolete. It still works, but there no support

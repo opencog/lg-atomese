@@ -162,6 +162,19 @@ LGParseDisjuncts::LGParseDisjuncts(const HandleSeq&& oset, Type t)
 	init();
 }
 
+LGParseSections::LGParseSections(const HandleSeq&& oset, Type t)
+	: LGParseLink(std::move(oset), t)
+{
+	// Type must be as expected
+	if (not nameserver().isA(t, LG_PARSE_SECTIONS))
+	{
+		const std::string& tname = nameserver().getTypeName(t);
+		throw InvalidParamException(TRACE_INFO,
+			"Expecting an LgParseSections, got %s", tname.c_str());
+	}
+	init();
+}
+
 // =================================================================
 
 ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
@@ -324,7 +337,8 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// want them. (The extra Atoms describe disjuncts, etc.)
 	bool minimal = (get_type() == LG_PARSE_MINIMAL);
 	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
-	HandleSet djs;
+	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
+	ValueSeq vlist;
 
 	// There are only so many parses available.
 	int num_available = sentence_num_linkages_post_processed(sent);
@@ -336,9 +350,13 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		if (0 < sentence_num_violations(sent, i)) continue;
 		jct ++;
 		Linkage lkg = linkage_create(i, sent, opts);
-		if (djonly)
+		if (sectonly)
 		{
-			make_djs(lkg, phrstr, as, djs);
+			vlist.emplace_back(make_sects(lkg, phrstr, as));
+		}
+		else if (djonly)
+		{
+			vlist.emplace_back(make_djs(lkg, phrstr, as));
 		}
 		else
 		{
@@ -354,8 +372,8 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	lg_error_clearall();
 
 	// Return a LinkValue holding all of the disjuncts
-	if (djonly)
-		return createLinkValue(djs);
+	if (sectonly or djonly)
+		return createLinkValue(vlist);
 
 	return snode;
 }
@@ -402,7 +420,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 		if (minimal) continue;
 
 		// Convert the disjunct to atomese.
-		HandleSeq conseq = make_conseq(lkg, w);
+		HandleSeq conseq = make_lg_conseq(lkg, w, as);
 
 		if (0 == conseq.size()) continue;
 
@@ -456,15 +474,16 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 }
 
 // Create only the disjuncts for the parse, and nothing else.
-void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
-                           AtomSpace* as, HandleSet& djs) const
+ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
+                               AtomSpace* as) const
 {
+	HandleSeq djs;
+
 	// Loop over all the words.
-	HandleSeq wrds;
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		HandleSeq conseq = make_conseq(lkg, w);
+		HandleSeq conseq = make_lg_conseq(lkg, w, as);
 		if (0 == conseq.size()) continue;
 
 		const char* wrd = get_word_string(lkg, w, phrstr);
@@ -474,15 +493,41 @@ void LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 			as->add_node(WORD_NODE, wrd),
 			as->add_link(LG_AND, std::move(conseq)));
 
-		// Increment by exactly one, every time it appears.
-		dj = as->increment_countTV(dj);
-
-		djs.insert(dj);
+		djs.emplace_back(dj);
 	}
+	return createLinkValue(djs);
 }
 
-/// Convert the disjunct to atomese.
-HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
+// Create only the Sections for the parse, and nothing else.
+// Sections are almost exactly like Disjuncts, but have a
+// different format.
+ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
+                                 AtomSpace* as) const
+{
+	HandleSeq djs;
+
+	// Loop over all the words.
+	int nwords = linkage_get_num_words(lkg);
+	for (int w=0; w<nwords; w++)
+	{
+		HandleSeq conseq = make_conseq(lkg, w, as);
+		if (0 == conseq.size()) continue;
+
+		const char* wrd = get_word_string(lkg, w, phrstr);
+
+		// Set up the disjuncts on each word
+		Handle dj = as->add_link(SECTION,
+			as->add_node(WORD_NODE, wrd),
+			as->add_link(CONNECTOR_SEQ, std::move(conseq)));
+
+		djs.emplace_back(dj);
+	}
+
+	return createLinkValue(djs);
+}
+
+/// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir.
+HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w, AtomSpace* as) const
 {
 	// This requires parsing a string. Fortunately, the
 	// string is a very simple format.
@@ -502,13 +547,13 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
 		char cstr[60];
 		if (60 <= len)
 			throw RuntimeException(TRACE_INFO,
-				"LGParseLink: Dictionary has a bug; Uuexpectedly long connector=%s", djstr);
+				"LGParseLink: Dictionary has a bug; Unexpectedly long connector=%s", djstr);
 		strncpy(cstr, p, len);
 		cstr[len] = 0;
-		Handle con(createNode(LG_CONN_NODE, cstr));
+		Handle con(as->add_node(LG_CONN_NODE, cstr));
 		cstr[0] = *(p+len);
 		cstr[1] = 0;
-		Handle dir(createNode(LG_CONN_DIR_NODE, cstr));
+		Handle dir(as->add_node(LG_CONN_DIR_NODE, cstr));
 		p = p+len+1;
 
 		HandleSeq cono;
@@ -516,10 +561,47 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
 		cono.push_back(dir);
 		if (multi)
 		{
-			Handle mu(createNode(LG_CONN_MULTI_NODE, "@"));
+			Handle mu(as->add_node(LG_CONN_MULTI_NODE, "@"));
 			cono.push_back(mu);
 		}
-		Handle conl(createLink(std::move(cono), LG_CONNECTOR));
+		Handle conl(as->add_link(LG_CONNECTOR, std::move(cono)));
+		conseq.push_back(conl);
+	}
+
+	return conseq;
+}
+
+/// Convert the disjunct to Section-style Atomese, using ConnectorLink
+/// and ConnectorDir. Similar to `make_lg_conseq` except that this uses
+/// the generic connector style, and uses words, not link types, for the
+/// connectors.
+HandleSeq LGParseLink::make_conseq(Linkage lkg, int w, AtomSpace* as) const
+{
+	std::vector<int> lks;
+
+	// Loop over all links, find the ones which conect to this word.
+	size_t nlinks = linkage_get_num_links(lkg);
+	for (size_t li=0; li < nlinks; li++)
+	{
+		// Look for links attaching to this word.
+		int lw = (int) linkage_get_link_lword(lkg, li);
+		int rw = (int) linkage_get_link_rword(lkg, li);
+
+		if (lw == w) lks.push_back(rw);
+		else if (rw == w) lks.push_back(lw);
+	}
+
+	// Place them in ascending order.
+	std::sort(lks.begin(), lks.end());
+
+	// Create a connector seq from the sorted links
+	HandleSeq conseq;
+	for (int c : lks)
+	{
+		const char* wrd = linkage_get_word(lkg, c);
+		Handle con(as->add_node(WORD_NODE, wrd));
+		Handle dir(as->add_node(CONNECTOR_DIR_NODE, c<w ? "-" : "+"));
+		Handle conl(as->add_link(LG_CONNECTOR, con, dir));
 		conseq.push_back(conl);
 	}
 
