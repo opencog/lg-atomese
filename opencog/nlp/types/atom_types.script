@@ -61,7 +61,7 @@ LG_PARSE_SECTIONS <- LG_PARSE_LINK
 // the direction and the multi-connector parts get distinct types.
 LG_CONN_NODE <- LEXICAL_NODE   // e.g. "MX"
 LG_CONN_MULTI_NODE <- LEXICAL_NODE  // multi-connector "@"
-LG_CONN_DIR_NODE <- DIRECTION_NODE  // e.g. "+"
+LG_CONN_DIR_NODE <- SEX_NODE  // e.g. "+"
 
 // Consists of the connector node, the direction, and possibly the
 // multi-connector node.
