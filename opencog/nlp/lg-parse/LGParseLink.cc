@@ -175,6 +175,19 @@ LGParseSections::LGParseSections(const HandleSeq&& oset, Type t)
 	init();
 }
 
+LGParseBonds::LGParseBonds(const HandleSeq&& oset, Type t)
+	: LGParseLink(std::move(oset), t)
+{
+	// Type must be as expected
+	if (not nameserver().isA(t, LG_PARSE_BONDS))
+	{
+		const std::string& tname = nameserver().getTypeName(t);
+		throw InvalidParamException(TRACE_INFO,
+			"Expecting an LgParseBonds, got %s", tname.c_str());
+	}
+	init();
+}
+
 // =================================================================
 
 ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)

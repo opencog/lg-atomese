@@ -86,9 +86,17 @@ public:
 class LGParseSections : public LGParseLink
 {
 public:
-	LGParseSections(const HandleSeq&&, Type=LG_PARSE_DISJUNCTS);
+	LGParseSections(const HandleSeq&&, Type=LG_PARSE_SECTIONS);
 	LGParseSections(const LGParseSections&) = delete;
 	LGParseSections& operator=(const LGParseSections&) = delete;
+};
+
+class LGParseBonds : public LGParseLink
+{
+public:
+	LGParseBonds(const HandleSeq&&, Type=LG_PARSE_BONDS);
+	LGParseBonds(const LGParseBonds&) = delete;
+	LGParseBonds& operator=(const LGParseBonds&) = delete;
 };
 
 LINK_PTR_DECL(LGParseLink)
@@ -102,6 +110,9 @@ LINK_PTR_DECL(LGParseDisjuncts)
 
 LINK_PTR_DECL(LGParseSections)
 #define createLGParseSections CREATE_DECL(LGParseSections)
+
+LINK_PTR_DECL(LGParseBonds)
+#define createLGParseBonds CREATE_DECL(LGParseBonds)
 
 /** @}*/
 }
