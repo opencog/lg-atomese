@@ -510,7 +510,7 @@ ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		HandleSeq conseq = make_conseq(lkg, w, as);
+		HandleSeq conseq = make_conseq(lkg, w, phrstr, as);
 		if (0 == conseq.size()) continue;
 
 		const char* wrd = get_word_string(lkg, w, phrstr);
@@ -575,7 +575,9 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w, AtomSpace* as) const
 /// and ConnectorDir. Similar to `make_lg_conseq` except that this uses
 /// the generic connector style, and uses words, not link types, for the
 /// connectors.
-HandleSeq LGParseLink::make_conseq(Linkage lkg, int w, AtomSpace* as) const
+HandleSeq LGParseLink::make_conseq(Linkage lkg, int w,
+                                   const char* phrstr,
+                                   AtomSpace* as) const
 {
 	std::vector<int> lks;
 
@@ -598,7 +600,7 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w, AtomSpace* as) const
 	HandleSeq conseq;
 	for (int c : lks)
 	{
-		const char* wrd = linkage_get_word(lkg, c);
+		const char* wrd = get_word_string(lkg, c, phrstr);
 		Handle con(as->add_node(WORD_NODE, wrd));
 		Handle dir(as->add_node(SEX_NODE, c<w ? "-" : "+"));
 		Handle conl(as->add_link(CONNECTOR, con, dir));

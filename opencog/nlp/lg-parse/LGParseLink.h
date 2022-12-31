@@ -50,7 +50,7 @@ protected:
 	void init();
 	const char* get_word_string(Linkage, int, const char*) const;
 	HandleSeq make_lg_conseq(Linkage, int, AtomSpace*) const;
-	HandleSeq make_conseq(Linkage, int, AtomSpace*) const;
+	HandleSeq make_conseq(Linkage, int, const char*, AtomSpace*) const;
 	ValuePtr make_djs(Linkage, const char*, AtomSpace*) const;
 	ValuePtr make_sects(Linkage, const char*, AtomSpace*) const;
 	Handle cvt_linkage(Linkage, int, const char*, const char*,
