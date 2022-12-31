@@ -600,8 +600,8 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w, AtomSpace* as) const
 	{
 		const char* wrd = linkage_get_word(lkg, c);
 		Handle con(as->add_node(WORD_NODE, wrd));
-		Handle dir(as->add_node(CONNECTOR_DIR_NODE, c<w ? "-" : "+"));
-		Handle conl(as->add_link(LG_CONNECTOR, con, dir));
+		Handle dir(as->add_node(SEX_NODE, c<w ? "-" : "+"));
+		Handle conl(as->add_link(CONNECTOR, con, dir));
 		conseq.push_back(conl);
 	}
 
