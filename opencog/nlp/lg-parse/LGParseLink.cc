@@ -420,7 +420,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 		if (minimal) continue;
 
 		// Convert the disjunct to atomese.
-		HandleSeq conseq = make_lg_conseq(lkg, w);
+		HandleSeq conseq = make_lg_conseq(lkg, w, as);
 
 		if (0 == conseq.size()) continue;
 
@@ -483,7 +483,7 @@ ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		HandleSeq conseq = make_lg_conseq(lkg, w);
+		HandleSeq conseq = make_lg_conseq(lkg, w, as);
 		if (0 == conseq.size()) continue;
 
 		const char* wrd = get_word_string(lkg, w, phrstr);
@@ -510,7 +510,7 @@ ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		HandleSeq conseq = make_conseq(lkg, w);
+		HandleSeq conseq = make_conseq(lkg, w, as);
 		if (0 == conseq.size()) continue;
 
 		const char* wrd = get_word_string(lkg, w, phrstr);
@@ -527,7 +527,7 @@ ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 }
 
 /// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir.
-HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
+HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w, AtomSpace* as) const
 {
 	// This requires parsing a string. Fortunately, the
 	// string is a very simple format.
@@ -550,10 +550,10 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 				"LGParseLink: Dictionary has a bug; Unexpectedly long connector=%s", djstr);
 		strncpy(cstr, p, len);
 		cstr[len] = 0;
-		Handle con(createNode(LG_CONN_NODE, cstr));
+		Handle con(as->add_node(LG_CONN_NODE, cstr));
 		cstr[0] = *(p+len);
 		cstr[1] = 0;
-		Handle dir(createNode(LG_CONN_DIR_NODE, cstr));
+		Handle dir(as->add_node(LG_CONN_DIR_NODE, cstr));
 		p = p+len+1;
 
 		HandleSeq cono;
@@ -561,10 +561,10 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 		cono.push_back(dir);
 		if (multi)
 		{
-			Handle mu(createNode(LG_CONN_MULTI_NODE, "@"));
+			Handle mu(as->add_node(LG_CONN_MULTI_NODE, "@"));
 			cono.push_back(mu);
 		}
-		Handle conl(createLink(std::move(cono), LG_CONNECTOR));
+		Handle conl(as->add_link(LG_CONNECTOR, std::move(cono)));
 		conseq.push_back(conl);
 	}
 
@@ -575,7 +575,7 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 /// and ConnectorDir. Similar to `make_lg_conseq` except that this uses
 /// the generic connector style, and uses words, not link types, for the
 /// connectors.
-HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
+HandleSeq LGParseLink::make_conseq(Linkage lkg, int w, AtomSpace* as) const
 {
 	HandleSeq conseq;
 
@@ -589,18 +589,18 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
 		if (lw == w)
 		{
 			const char* wrd = linkage_get_word(lkg, rw);
-			Handle con(createNode(WORD_NODE, wrd));
-			Handle dir(createNode(CONNECTOR_DIR_NODE, "+"));
-			Handle conl(createLink(LG_CONNECTOR, con, dir));
+			Handle con(as->add_node(WORD_NODE, wrd));
+			Handle dir(as->add_node(CONNECTOR_DIR_NODE, "+"));
+			Handle conl(as->add_link(LG_CONNECTOR, con, dir));
 			conseq.push_back(conl);
 		}
 		else
 		if (rw == w)
 		{
 			const char* wrd = linkage_get_word(lkg, lw);
-			Handle con(createNode(WORD_NODE, wrd));
-			Handle dir(createNode(CONNECTOR_DIR_NODE, "-"));
-			Handle conl(createLink(LG_CONNECTOR, con, dir));
+			Handle con(as->add_node(WORD_NODE, wrd));
+			Handle dir(as->add_node(CONNECTOR_DIR_NODE, "-"));
+			Handle conl(as->add_link(LG_CONNECTOR, con, dir));
 			conseq.push_back(conl);
 		}
 	}
