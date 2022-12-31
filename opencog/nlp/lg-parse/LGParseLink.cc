@@ -510,7 +510,7 @@ void LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	int nwords = linkage_get_num_words(lkg);
 	for (int w=0; w<nwords; w++)
 	{
-		HandleSeq conseq = make_lg_conseq(lkg, w);
+		HandleSeq conseq = make_conseq(lkg, w);
 		if (0 == conseq.size()) continue;
 
 		const char* wrd = get_word_string(lkg, w, phrstr);
