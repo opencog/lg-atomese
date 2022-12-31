@@ -577,8 +577,9 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w, AtomSpace* as) const
 /// connectors.
 HandleSeq LGParseLink::make_conseq(Linkage lkg, int w, AtomSpace* as) const
 {
-	HandleSeq conseq;
+	std::vector<int> lks;
 
+	// Loop over all links, find the ones which conect to this word.
 	size_t nlinks = linkage_get_num_links(lkg);
 	for (size_t li=0; li < nlinks; li++)
 	{
@@ -586,23 +587,22 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w, AtomSpace* as) const
 		int lw = (int) linkage_get_link_lword(lkg, li);
 		int rw = (int) linkage_get_link_rword(lkg, li);
 
-		if (lw == w)
-		{
-			const char* wrd = linkage_get_word(lkg, rw);
-			Handle con(as->add_node(WORD_NODE, wrd));
-			Handle dir(as->add_node(CONNECTOR_DIR_NODE, "+"));
-			Handle conl(as->add_link(LG_CONNECTOR, con, dir));
-			conseq.push_back(conl);
-		}
-		else
-		if (rw == w)
-		{
-			const char* wrd = linkage_get_word(lkg, lw);
-			Handle con(as->add_node(WORD_NODE, wrd));
-			Handle dir(as->add_node(CONNECTOR_DIR_NODE, "-"));
-			Handle conl(as->add_link(LG_CONNECTOR, con, dir));
-			conseq.push_back(conl);
-		}
+		if (lw == w) lks.push_back(rw);
+		else if (rw == w) lks.push_back(lw);
+	}
+
+	// Place them in ascending order.
+	std::sort(lks.begin(), lks.end());
+
+	// Create a connector seq from the sorted links
+	HandleSeq conseq;
+	for (int c : lks)
+	{
+		const char* wrd = linkage_get_word(lkg, c);
+		Handle con(as->add_node(WORD_NODE, wrd));
+		Handle dir(as->add_node(CONNECTOR_DIR_NODE, c<w ? "-" : "+"));
+		Handle conl(as->add_link(LG_CONNECTOR, con, dir));
+		conseq.push_back(conl);
 	}
 
 	return conseq;
