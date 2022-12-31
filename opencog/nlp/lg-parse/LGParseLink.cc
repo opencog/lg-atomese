@@ -342,17 +342,15 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 	// Create the SentenceNode only for the old-style output
 	Handle snode;
+	char sentstr[47] = "sentence@";
 	if (not (sectonly or bondonly or djonly))
 	{
 		// Hmm. I hope that uuid_generate() won't block if there is not
 		// enough entropy in the entropy pool....
 		uuid_t uu;
 		uuid_generate(uu);
-		char idstr[37];
-		uuid_unparse(uu, idstr);
+		uuid_unparse(uu, &sentstr[10]);
 
-		char sentstr[sizeof(idstr) + 10] = "sentence@";
-		strcat(sentstr, idstr);
 		snode = as->add_node(SENTENCE_NODE, sentstr);
 	}
 
