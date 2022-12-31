@@ -578,35 +578,32 @@ HandleSeq LGParseLink::make_lg_conseq(Linkage lkg, int w) const
 /// connectors.
 HandleSeq LGParseLink::make_conseq(Linkage lkg, int w) const
 {
-	// This requires parsing a string. Fortunately, the
-	// string is a very simple format.
-	const char* djstr = linkage_get_disjunct_str(lkg, w);
-
 	HandleSeq conseq;
-	const char* p = djstr;
-	while (*p)
-	{
-		while (' ' == *p) p++;
-		if (0 == *p) break;
-		if ('@' == *p) p++;  // Ignore multi's
-		const char* s = strchr(p, ' ');
-		size_t len = s-p-1;
-		if (NULL == s) len = strlen(p) - 1;
-		char cstr[60];
-		if (60 <= len)
-			throw RuntimeException(TRACE_INFO,
-				"LGParseLink: Dictionary has a bug; Unexpectedly long connector=%s", djstr);
-		strncpy(cstr, p, len);
-		cstr[len] = 0;
-//xxxx
-		Handle con(createNode(WORD_NODE, cstr));
-		cstr[0] = *(p+len);
-		cstr[1] = 0;
-		Handle dir(createNode(CONNECTOR_DIR_NODE, cstr));
-		p = p+len+1;
 
-		Handle conl(createLink(LG_CONNECTOR, con, dir));
-		conseq.push_back(conl);
+	size_t nlinks = linkage_get_num_links(lkg);
+	for (size_t li=0; li < nlinks; li++)
+	{
+		// Look for links attaching to this word.
+		int lw = (int) linkage_get_link_lword(lkg, li);
+		int rw = (int) linkage_get_link_rword(lkg, li);
+
+		if (lw == w)
+		{
+			const char* wrd = linkage_get_word(lkg, rw);
+			Handle con(createNode(WORD_NODE, wrd));
+			Handle dir(createNode(CONNECTOR_DIR_NODE, "+"));
+			Handle conl(createLink(LG_CONNECTOR, con, dir));
+			conseq.push_back(conl);
+		}
+		else
+		if (rw == w)
+		{
+			const char* wrd = linkage_get_word(lkg, lw);
+			Handle con(createNode(WORD_NODE, wrd));
+			Handle dir(createNode(CONNECTOR_DIR_NODE, "-"));
+			Handle conl(createLink(LG_CONNECTOR, con, dir));
+			conseq.push_back(conl);
+		}
 	}
 
 	return conseq;
