@@ -349,7 +349,9 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		// enough entropy in the entropy pool....
 		uuid_t uu;
 		uuid_generate(uu);
-		uuid_unparse(uu, &sentstr[10]);
+		char idstr[37];
+		uuid_unparse(uu, idstr);
+		strcat(sentstr, idstr);
 
 		snode = as->add_node(SENTENCE_NODE, sentstr);
 	}
