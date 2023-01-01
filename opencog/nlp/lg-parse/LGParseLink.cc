@@ -370,7 +370,9 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		}
 		else if (bondonly)
 		{
-			vlist.emplace_back(make_bonds(lkg, phrstr, as));
+			ValuePtr words(make_words(lkg, phrstr, as));
+			ValuePtr bonds(make_bonds(lkg, phrstr, as));
+			vlist.emplace_back(createLinkValue(ValueSeq({words, bonds})));
 		}
 		else if (djonly)
 		{
@@ -570,8 +572,23 @@ ValuePtr LGParseLink::make_bonds(Linkage lkg, const char* phrstr,
 		Handle bond(as->add_link(EVALUATION_LINK, brel, lst));
 		bonds.emplace_back(bond);
 	}
-
 	return createLinkValue(bonds);
+}
+
+ValuePtr LGParseLink::make_words(Linkage lkg, const char* phrstr,
+                                 AtomSpace* as) const
+{
+	// Loop over all the words.
+	HandleSeq words;
+	int nwords = linkage_get_num_words(lkg);
+	for (int w=0; w<nwords; w++)
+	{
+		// Get the word in the sentence.
+		const char* wrd = get_word_string(lkg, w, phrstr);
+		Handle word(as->add_node(WORD_NODE, wrd));
+		words.emplace_back(word);
+	}
+	return createLinkValue(words);
 }
 
 /// Convert the disjunct to LG-style Atomese, using LgConn and LgConDir.
