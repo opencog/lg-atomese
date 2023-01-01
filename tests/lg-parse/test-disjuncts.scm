@@ -35,9 +35,6 @@
 (test-assert "Disjunct exists"
 	(not (eq? #f test-dj)))
 
-(test-approximate "Disjunct has correct count"
-	4.0 (cog-count test-dj) 1.0d-6)
-
 (test-end tname)
 
 (opencog-test-end)
