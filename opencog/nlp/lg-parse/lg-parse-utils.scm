@@ -1,7 +1,8 @@
 ;
-; nlp-utils.scm
+; lg-parse-utils.scm
 ;
-; Assorted NLP utilities.  Operations include:
+; Assorted utilities for working with the LgParseLink output.
+; Operations include:
 ; -- getting the various parses of a sentence
 ; -- getting the words in a parse
 ; -- getting assorted word properties
@@ -16,15 +17,15 @@
 ; -- word-inst-get-word     Return the WordNode associated with word-inst.
 ; -- word-inst-get-links    Get all LG links involving word-inst.
 ;
+; The basic issue here is that the so-called 'RelEx format' makes heavy
+; use of an indexed naming system, where each word-instance is stored
+; in a unique node, and then everything is keyed off of that. It's
+; verbose and ugly and poses memory-management issues.
 ;
-; Important Design Note: A long-term goal of NLP within opencog is to
-; do processing not in scheme, but in OpenCog itself, using pattern
-; matching. The reason for this is so that we can apply OpenCog learning
-; algos to learn new ways of processing. Many/most of the utilities below
-; could be implemented by using pattern matching. Code that depends on these
-; utilities should be converted to use pattern matching as soon as reasonable.
-; Code that cannot be converted will eventually (in the distant future ...)
-; become obsolete.
+; A side-effect of this ugliness is that some icky blebs of code are
+; needed in otder to present a reasonably friendly programmer interface.
+; That's what this file does. An ideal wolution would avoid the need
+; for these helper utilities.
 ;
 ; Copyright (c) 2008, 2009, 2013 Linas Vepstas <linasvepstas@gmail.com>
 ; Copyright (c) 2015 OpenCog Foundation
@@ -156,7 +157,7 @@
   `(WordInstanceNode 'dog@12345')`, return all EvaluationLinks
   of the form
 
-     Evaluati`onLink
+     EvaluationLink
         LgLinkNode 'foo'
         ListLink
            WordInstanceNode 'dog@12345'
