@@ -46,7 +46,7 @@ void error_handler(lg_errinfo *ei, void *data);
 ///         PhraseNode "this is a test."
 ///         LgDictNode "en"
 ///         NumberNode  6   -- optional, number of parses.
-///         AtomSpace  foo  -- optional, AtomSpace holdig dict info.
+///         AtomSpace  foo  -- optional, AtomSpace holding dict info.
 ///         StorageNode bar -- optional, StorageNode holding dict info.
 ///
 /// When executed, the result of parsing the phrase text, using the
