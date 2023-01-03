@@ -259,30 +259,14 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	parse_options_set_verbosity(opts, 0);
 	parse_options_set_max_parse_time(opts, 60);
 
-	// The number of linkages to process.
-	int max_linkages = 0;
-	if (3 <= _outgoing.size())
-	{
-		NumberNodePtr nnp(NumberNodeCast(_outgoing[2]));
-		max_linkages = nnp->get_value() + 0.5;
-		parse_options_set_linkage_limit(opts, max_linkages);
-	}
-	else
-	{
-		// Avoid ingesting an absurdly large number of
-		// linkages. If the user really wants more, they
-		// need to ask for more.
-		parse_options_set_linkage_limit(opts, 100);
-	}
-
-	// XXX FIXME -- We should fish parse options out of the atomspace.
-	// Something like this, maybe:
-	//     EvaluationLink
-	//         PredicateNode "LG ParseTime"
-	//         ListLink
-	//             LgDictNode "En_US"
-	//             NumberNode 42
-	// ... or something like that ...
+	// For the MST/MPG parses, the disjuncts consist of all-optional
+	// connectors, and the number of parses generated is huge. If we
+	// expect to have a good chance of finding the linkage with the
+	// minimal cost, we have to look at a lot of them. This does
+	// impact performance; I don't know how much. Storage is about
+	// 120 bytes per linkage, so 15000 linkages == 2MBytes.
+#define DEFAULT_NUM_LINKAGES 15000
+	parse_options_set_linkage_limit(opts, DEFAULT_NUM_LINKAGES);
 
 	// For the ANY language, this code is being used for sampling.
 	// In this case, we are not concerned about reproducibility,
@@ -290,6 +274,26 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// Viz, every time we have a four-word sentence, we want a
 	// different parse for it, each time. Bug #3065.
 	parse_options_set_repeatable_rand(opts, 0);
+
+	// The number of linkages to process.
+	int max_linkages = 0;
+	if (3 <= _outgoing.size())
+	{
+		NumberNodePtr nnp(NumberNodeCast(_outgoing[2]));
+		max_linkages = nnp->get_value() + 0.5;
+
+		if (DEFAULT_NUM_LINKAGES < max_linkages)
+			parse_options_set_linkage_limit(opts, max_linkages);
+	}
+
+	// XXX FIXME -- We should fish parse options out of the atomspace.
+	// Something like this, maybe:
+	//     EvaluationLink
+	//         PredicateNode "LG ParseTime"
+	//         ListLink
+	//             LgDictNode "en"
+	//             NumberNode 42
+	// ... or something like that ... or maybe Values on the DictNode?
 
 	// Count the number of parses.
 	int num_linkages = sentence_parse(sent, opts);
@@ -328,7 +332,8 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// Post-processor might not accept all of the parses.
 	num_linkages = sentence_num_valid_linkages(sent);
 
-	// Takes limit from parameter only if it's positive and smaller
+	// Clamp number of parses to placed in AtomSpace to be no more
+	// than what was asked for.
 	if ((max_linkages > 0) && (max_linkages < num_linkages))
 		num_linkages = max_linkages;
 
