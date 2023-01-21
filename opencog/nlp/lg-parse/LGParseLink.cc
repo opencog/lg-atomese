@@ -331,7 +331,6 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		parse_options_delete(opts);
 		lg_error_flush();
 		lg_error_clearall();
-		logger().warn("Parser timeout on >>%s<<", phrstr);
 		throw RuntimeException(TRACE_INFO,
 			"LGParseLink: Parser timeout. (%d)", num_linkages);
 	}
