@@ -254,10 +254,11 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 	// Work with the default parse options (mostly).
 	// Suppress printing of combinatorial-overflow warning.
-	// Set timeout to 60 seconds; the default is infinite.
+	// Set timeout to 150 seconds; the default is infinite.
+#define MAX_PARSE_TIME 150
 	Parse_Options opts = parse_options_create();
 	parse_options_set_verbosity(opts, 0);
-	parse_options_set_max_parse_time(opts, 60);
+	parse_options_set_max_parse_time(opts, MAX_PARSE_TIME);
 
 	// For the MST/MPG parses, the disjuncts consist of all-optional
 	// connectors, and the number of parses generated is huge. If we
@@ -301,6 +302,8 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	{
 		sentence_delete(sent);
 		parse_options_delete(opts);
+		lg_error_flush();
+		lg_error_clearall();
 
 		// Sentence too long.
 		if (-2 == num_linkages)
@@ -313,7 +316,8 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	}
 
 	// If num_links is zero, try again, allowing null linked words.
-	if (num_linkages == 0)
+	// But only if there were really zero, and not a timeout.
+	if (num_linkages == 0 and not parse_options_resources_exhausted(opts))
 	{
 		parse_options_reset_resources(opts);
 		parse_options_set_min_null_count(opts, 1);
@@ -325,6 +329,9 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	{
 		sentence_delete(sent);
 		parse_options_delete(opts);
+		lg_error_flush();
+		lg_error_clearall();
+		logger().warn("Parser timeout on >>%s<<", phrstr);
 		throw RuntimeException(TRACE_INFO,
 			"LGParseLink: Parser timeout. (%d)", num_linkages);
 	}
