@@ -326,7 +326,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		sentence_delete(sent);
 		parse_options_delete(opts);
 		throw RuntimeException(TRACE_INFO,
-			"LGParseLink: Parser timeout.");
+			"LGParseLink: Parser timeout. (%d)", num_linkages);
 	}
 
 	// Post-processor might not accept all of the parses.
