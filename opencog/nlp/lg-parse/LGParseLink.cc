@@ -257,6 +257,9 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// Set timeout to 150 seconds; the default is infinite.
 #define MAX_PARSE_TIME 150
 	Parse_Options opts = parse_options_create();
+
+	// Set to 2 to get basic timing info
+	// Set to 6 to get pruning/power-pruning info
 	parse_options_set_verbosity(opts, 0);
 	parse_options_set_max_parse_time(opts, MAX_PARSE_TIME);
 
