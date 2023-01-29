@@ -37,6 +37,11 @@ using namespace opencog;
 void error_handler(lg_errinfo *ei, void *data);
 void error_handler(lg_errinfo *ei, void *data)
 {
+	// LG always puts a newline at the end. But so does logger.
+	// Strip the newline.
+	size_t len = strlen(ei->text);
+	if (0 < len) ei->text[len-1] = 0;
+
 	if (lg_Fatal == ei->severity or lg_Error == ei->severity)
 		logger().error("%s", ei->text);
 	else if (lg_Warn == ei->severity)
