@@ -40,14 +40,15 @@ void error_handler(lg_errinfo *ei, void *data)
 	// LG always puts a newline at the end. But so does logger.
 	// Strip the newline.
 	size_t len = strlen(ei->text);
-	if (0 < len) ei->text[len-1] = 0;
+	char * nonl = strndupa(ei->text, len);
+	if (0 < len) nonl[len-1] = 0;
 
 	if (lg_Fatal == ei->severity or lg_Error == ei->severity)
-		logger().error("%s", ei->text);
+		logger().error("%s", nonl);
 	else if (lg_Warn == ei->severity)
-		logger().warn("%s", ei->text);
+		logger().warn("%s", nonl);
 	else
-		logger().info("%s", ei->text);
+		logger().info("%s", nonl);
 }
 
 // ------------------------------------------------------
