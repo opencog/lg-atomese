@@ -566,7 +566,7 @@ ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 	return createLinkValue(djs);
 }
 
-// Create only the EvaluationLink-BondNodes for the parse.
+// Create only the EdgeLink-BondNodes for the parse.
 // These are just the links in the linkage.
 ValuePtr LGParseLink::make_bonds(Linkage lkg, const char* phrstr,
                                  AtomSpace* as) const
@@ -589,7 +589,7 @@ ValuePtr LGParseLink::make_bonds(Linkage lkg, const char* phrstr,
 		const char* label = linkage_get_link_label(lkg, lk);
 		Handle brel(as->add_node(BOND_NODE, label));
 
-		Handle bond(as->add_link(EVALUATION_LINK, brel, lst));
+		Handle bond(as->add_link(EDGE_LINK, brel, lst));
 		bonds.emplace_back(bond);
 	}
 	return createLinkValue(bonds);
