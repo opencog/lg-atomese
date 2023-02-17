@@ -258,8 +258,12 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 #define MAX_PARSE_TIME 150
 	Parse_Options opts = parse_options_create();
 
-	// Set to 2 to get basic timing info
-	// Set to 6 to get pruning/power-pruning info
+	// Set to 0 to disable all messages (including warnings).
+	// Set to 1 to get basic info and warnings.
+	// Set to 2 to get timing info.
+	// Set to 6 to get pruning/power-pruning info.
+	// We want 0 here, because otherwise the log fills up with
+	// [WARN] Combinatorial explosion! messages. Yuck.
 	parse_options_set_verbosity(opts, 0);
 	parse_options_set_max_parse_time(opts, MAX_PARSE_TIME);
 
