@@ -386,7 +386,9 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		Linkage lkg = linkage_create(i, sent, opts);
 		if (sectonly)
 		{
-			vlist.emplace_back(make_sects(lkg, phrstr, as));
+			ValuePtr sects(make_sects(lkg, phrstr, as));
+			ValuePtr bonds(make_bonds(lkg, phrstr, as));
+			vlist.emplace_back(createLinkValue(ValueSeq({sects, bonds})));
 		}
 		else if (bondonly)
 		{
