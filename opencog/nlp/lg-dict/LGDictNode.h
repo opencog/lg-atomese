@@ -49,6 +49,7 @@ public:
 	LgDictNode(const LgDictNode&) = delete;
 	LgDictNode& operator=(const LgDictNode&) = delete;
 	virtual ~LgDictNode();
+	virtual void setAtomSpace(AtomSpace*);
 
 	Dictionary get_dictionary(void);
 

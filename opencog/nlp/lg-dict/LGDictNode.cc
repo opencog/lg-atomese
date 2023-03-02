@@ -66,6 +66,9 @@ LgDictNode::~LgDictNode()
 	_dict = nullptr;
 }
 
+// Link grammar dictionary creation is NOT thread-safe.
+static std::mutex _global_mtx;
+
 /// Get the dictionary associated with the node.  This performs a
 /// delayed open, because we don't really want the open to happen
 /// in the constructor (since the constructor might run mmultiple
@@ -78,7 +81,6 @@ Dictionary LgDictNode::get_dictionary()
 	const char * lang = get_name().c_str();
 
 	// Link grammar dictionary creation is NOT thread-safe.
-	static std::mutex _global_mtx;
 	std::lock_guard<std::mutex> lck(_global_mtx);
 
 	// Check again, this time under the lock.
@@ -86,6 +88,25 @@ Dictionary LgDictNode::get_dictionary()
 
 	_dict = dictionary_create_lang(lang);
 	return _dict;
+}
+
+// ------------------------------------------------------
+
+// This is called, when the atom is both inserted, and deleted from
+// the AtomSpace. It's harmless on insertion. On deletion, it will
+// close and blow away the dictionary, freeing any malloc'ed cruft.
+// The core issue is that the deletion in the dtor is not enough:
+// guile might be holding on to pointers, that prevent the dtor from
+// running.
+void LgDictNode::setAtomSpace(AtomSpace* as)
+{
+	Node::setAtomSpace(as);
+
+	// Zap the dict.
+	std::lock_guard<std::mutex> lck(_global_mtx);
+	if (nullptr == _dict) return;
+	dictionary_delete(_dict);
+	_dict = nullptr;
 }
 
 // ------------------------------------------------------
