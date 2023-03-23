@@ -48,7 +48,7 @@ class LGParseLink : public FunctionLink
 {
 protected:
 	void init();
-	const char* get_word_string(Linkage, int, const char*) const;
+	std::string get_word_string(Linkage, int, const char*) const;
 	HandleSeq make_lg_conseq(Linkage, int, AtomSpace*) const;
 	HandleSeq make_conseq(Linkage, int, const char*, AtomSpace*) const;
 	ValuePtr make_djs(Linkage, const char*, AtomSpace*) const;

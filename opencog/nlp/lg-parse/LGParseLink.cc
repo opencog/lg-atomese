@@ -444,7 +444,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 		uuid_unparse(uu2, idstr2);
 
 		// Get the word in the sentence.
-		const char* wrd = get_word_string(lkg, w, phrstr);
+		std::string wrd = get_word_string(lkg, w, phrstr);
 		std::string buff = wrd;
 		buff += "@";
 		buff += idstr2;
@@ -454,7 +454,7 @@ Handle LGParseLink::cvt_linkage(Linkage lkg, int i, const char* idstr,
 		// Associate the word with the parse.
 		as->add_link(WORD_INSTANCE_LINK, winst, pnode);
 		as->add_link(REFERENCE_LINK, winst,
-			as->add_node(WORD_NODE, wrd));
+			as->add_node(WORD_NODE, std::move(wrd)));
 		as->add_link(WORD_SEQUENCE_LINK, winst,
 			Handle(createNumberNode(++wcnt)));
 
@@ -528,11 +528,11 @@ ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 		HandleSeq conseq = make_lg_conseq(lkg, w, as);
 		if (0 == conseq.size()) continue;
 
-		const char* wrd = get_word_string(lkg, w, phrstr);
+		std::string wrd = get_word_string(lkg, w, phrstr);
 
 		// Set up the disjuncts on each word
 		Handle dj = as->add_link(LG_DISJUNCT,
-			as->add_node(WORD_NODE, wrd),
+			as->add_node(WORD_NODE, std::move(wrd)),
 			as->add_link(LG_AND, std::move(conseq)));
 
 		djs.emplace_back(dj);
@@ -555,11 +555,11 @@ ValuePtr LGParseLink::make_sects(Linkage lkg, const char* phrstr,
 		HandleSeq conseq = make_conseq(lkg, w, phrstr, as);
 		if (0 == conseq.size()) continue;
 
-		const char* wrd = get_word_string(lkg, w, phrstr);
+		std::string wrd = get_word_string(lkg, w, phrstr);
 
 		// Set up the disjuncts on each word
 		Handle dj = as->add_link(SECTION,
-			as->add_node(WORD_NODE, wrd),
+			as->add_node(WORD_NODE, std::move(wrd)),
 			as->add_link(CONNECTOR_SEQ, std::move(conseq)));
 
 		djs.emplace_back(dj);
@@ -606,8 +606,8 @@ ValuePtr LGParseLink::make_words(Linkage lkg, const char* phrstr,
 	for (int w=0; w<nwords; w++)
 	{
 		// Get the word in the sentence.
-		const char* wrd = get_word_string(lkg, w, phrstr);
-		Handle word(as->add_node(WORD_NODE, wrd));
+		std::string wrd = get_word_string(lkg, w, phrstr);
+		Handle word(as->add_node(WORD_NODE, std::move(wrd)));
 		words.emplace_back(word);
 	}
 	return createLinkValue(words);
@@ -687,8 +687,8 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w,
 	HandleSeq conseq;
 	for (int c : lks)
 	{
-		const char* wrd = get_word_string(lkg, c, phrstr);
-		Handle con(as->add_node(WORD_NODE, wrd));
+		std::string wrd = get_word_string(lkg, c, phrstr);
+		Handle con(as->add_node(WORD_NODE, std::move(wrd)));
 		Handle dir(as->add_node(SEX_NODE, c<w ? "-" : "+"));
 		Handle conl(as->add_link(CONNECTOR, con, dir));
 		conseq.push_back(conl);
@@ -697,12 +697,9 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w,
 	return conseq;
 }
 
-const char* LGParseLink::get_word_string(Linkage lkg, int w,
+std::string LGParseLink::get_word_string(Linkage lkg, int w,
                                          const char* phrstr) const
 {
-#define BUFSZ 240
-	static thread_local char buff[BUFSZ];
-
 	size_t sb = linkage_get_word_byte_start(lkg, w);
 	size_t eb = linkage_get_word_byte_end(lkg, w);
 
@@ -713,14 +710,8 @@ const char* LGParseLink::get_word_string(Linkage lkg, int w,
 	// no offsets, we need to handle those differently.
 	if (eb != sb) // Neither are equal to -1
 	{
-		size_t len = eb-sb;
-		if (BUFSZ <= len)
-			throw FatalErrorException(TRACE_INFO,
-				"LGParseLink: Unexpectedly long word; length=%lu", len);
-
-		strncpy(buff, phrstr + sb, len);
-		buff[len] = 0;
-		return buff;
+		std::string rv(phrstr + sb, eb - sb);
+		return rv;
 	}
 
 	const char* wrd = linkage_get_word(lkg, w);
