@@ -303,6 +303,13 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	//             NumberNode 42
 	// ... or something like that ... or maybe Values on the DictNode?
 
+	// Avoid generating big piles of Atoms, if the user did not
+	// want them. (The extra Atoms describe disjuncts, etc.)
+	bool minimal = (get_type() == LG_PARSE_MINIMAL);
+	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
+	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
+	bool bondonly = (get_type() == LG_PARSE_BONDS);
+
 	// Count the number of parses.
 	int num_linkages = sentence_parse(sent, opts);
 	if (num_linkages < 0)
@@ -317,9 +324,21 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 			throw RuntimeException(TRACE_INFO,
 				"LGParseLink: Sentence too long >>%s<<", phrstr);
 
-		// I don't know what would cause this...
-		throw FatalErrorException(TRACE_INFO,
-			"LGParseLink: Unexpected parser error while parsing >>%s<<", phrstr);
+		// Attempting to parse pure whitespace will return -1. e.g.
+		//   (LgParseBonds (Phrase "\n\n\n\n\n") (LgDict "any") (Number 4))
+		// LG sentence_split() returned non-zero value.
+		// In this case, there really are no parses.
+
+		// Empty LinkValue for those guys expecting LinkValue
+		if (sectonly or bondonly or djonly)
+			return createLinkValue();
+
+		// Bogus SentenceNode. This might make downstream choke!?
+		char idstr[37];
+		uuid_unparse(0, idstr);
+		char sentstr[47] = "sentence@";
+		strcat(sentstr, idstr);
+		return as->add_node(SENTENCE_NODE, sentstr);
 	}
 
 	// If num_links is zero, try again, allowing null linked words.
@@ -350,14 +369,6 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	if ((max_linkages > 0) && (max_linkages < num_linkages))
 		num_linkages = max_linkages;
 
-	// Avoid generating big piles of Atoms, if the user did not
-	// want them. (The extra Atoms describe disjuncts, etc.)
-	bool minimal = (get_type() == LG_PARSE_MINIMAL);
-	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
-	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
-	bool bondonly = (get_type() == LG_PARSE_BONDS);
-	ValueSeq vlist;
-
 	// Create the SentenceNode only for the old-style output
 	Handle snode;
 	char sentstr[47] = "sentence@";
@@ -377,6 +388,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// There are only so many parses available.
 	int num_available = sentence_num_linkages_post_processed(sent);
 
+	ValueSeq vlist;
 	int jct = 0;
 	for (int i=0; jct<num_linkages and i<num_available; i++)
 	{
