@@ -83,7 +83,8 @@ void LGParseLink::init()
 			"LGParseLink: Expecting two to five arguments, got %lu", osz);
 
 	Type pht = oset[0]->get_type();
-	if (PHRASE_NODE != pht and VARIABLE_NODE != pht and GLOB_NODE != pht)
+	if (PHRASE_NODE != pht and (not oset[0]->is_executable()) and
+	    VARIABLE_NODE != pht and GLOB_NODE != pht)
 		throw InvalidParamException(TRACE_INFO,
 			"LGParseLink: Expecting PhraseNode, got %s",
 			oset[0]->to_string().c_str());
@@ -194,10 +195,6 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 {
 	// By the time that we execute, the arguments must be concrete,
 	// actual things, and not VariableNodes, etc.
-	if (PHRASE_NODE != _outgoing[0]->get_type())
-		throw InvalidParamException(TRACE_INFO,
-			"LGParseLink: Invalid outgoing set at 0; expecting PhraseNode");
-
 	if (LG_DICT_NODE != _outgoing[1]->get_type())
 		throw InvalidParamException(TRACE_INFO,
 			"LGParseLink: Invalid outgoing set at 1; expecting LgDictNode");
@@ -245,8 +242,43 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 			"LgParseLink requires valid dictionary! \"%s\" was given.",
 			ldn->get_name().c_str());
 
-	// Set up the sentence
-	const char* phrstr = _outgoing[0]->get_name().c_str() ;
+	// Set up the sentence. Several forms are supported:
+	// 1) Hard-coded as (PhraseNode "Some sentence to parse")
+	// 2) Some executable atom that returns above.
+	// 3) Some executable atom that returns a stream of the above.
+	//    This third case is interesting but experimental. Might change.
+	Handle phra(_outgoing[0]);
+	if (phra->is_executable())
+	{
+		ValuePtr phrsv = _outgoing[0]->execute(as, silent);
+		if (phrsv->is_type(LINK_VALUE))
+		{
+			// For now, only one at a time!?
+			const ValueSeq& vlist = LinkValueCast(phrsv)->value();
+			if (1 != vlist.size())
+				throw InvalidParamException(TRACE_INFO,
+					"LGParseLink: Expecting Value of length one");
+			phrsv = vlist[0];
+		}
+
+		// Better have an Node, by now.
+		if (not phrsv->is_node())
+			throw InvalidParamException(TRACE_INFO,
+				"LGParseLink: Expecting PhraseNode, got %s",
+				phrsv->to_string().c_str());
+
+		phra = HandleCast(phrsv);
+	}
+
+	// I suppose this could be relaxed to be "any kind of node", but
+	// for debugging, it seems like strict type-checking is better.
+	if (PHRASE_NODE != phra->get_type() and
+	    ITEM_NODE != phra->get_type())
+		throw InvalidParamException(TRACE_INFO,
+			"LGParseLink: Expecting PhraseNode, got %s",
+			phra->to_string().c_str());
+
+	const char* phrstr = phra->get_name().c_str() ;
 	Sentence sent = sentence_create(phrstr, dict);
 	if (nullptr == sent)
 		throw FatalErrorException(TRACE_INFO,

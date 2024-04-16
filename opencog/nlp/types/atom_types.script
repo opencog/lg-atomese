@@ -19,10 +19,11 @@ WORD_CLASS_NODE <- ITEM_CLASS_NODE  // A signifier of a set of words
 REFERENCE_LINK <- ORDERED_LINK
 
 // Custom atoms to identify documents, sentences, word instances.
+// Perhaps some of thesem should be ITEM_NODE ?
 DOCUMENT_NODE <- NODE
 SENTENCE_NODE <- NODE
 SENTENCE_LINK <- ASSOCIATIVE_LINK
-PHRASE_NODE <- NODE
+PHRASE_NODE <- ITEM_NODE
 PARSE_NODE <- NODE
 PARSE_LINK <- ASSOCIATIVE_LINK
 WORD_INSTANCE_NODE <- NODE
