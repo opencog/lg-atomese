@@ -32,6 +32,7 @@
 #include <opencog/atoms/base/Node.h>
 #include <opencog/atoms/core/NumberNode.h>
 #include <opencog/atoms/value/LinkValue.h>
+#include <opencog/atoms/value/StringValue.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/persist/api/StorageNode.h>
 #include <opencog/nlp/lg-dict/LGDictNode.h>
@@ -244,13 +245,14 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 	// Set up the sentence. Several forms are supported:
 	// 1) Hard-coded as (PhraseNode "Some sentence to parse")
-	// 2) Some executable atom that returns above.
-	// 3) Some executable atom that returns a stream of the above.
-	//    This third case is interesting but experimental. Might change.
-	Handle phra(_outgoing[0]);
-	if (phra->is_executable())
+	// 2) Some executable atom that returns a Node or StringValue
+	// 3) Some executable atom that returns a stream of strings.
+	//    This third case is interesting but experimental. Might be
+	//    buggy.
+	ValuePtr phrsv(_outgoing[0]);
+	if (_outgoing[0]->is_executable())
 	{
-		ValuePtr phrsv = _outgoing[0]->execute(as, silent);
+		phrsv = _outgoing[0]->execute(as, silent);
 		if (phrsv->is_type(LINK_VALUE))
 		{
 			// For now, only one at a time!?
@@ -260,25 +262,26 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 					"LGParseLink: Expecting Value of length one");
 			phrsv = vlist[0];
 		}
-
-		// Better have an Node, by now.
-		if (not phrsv->is_node())
-			throw InvalidParamException(TRACE_INFO,
-				"LGParseLink: Expecting PhraseNode, got %s",
-				phrsv->to_string().c_str());
-
-		phra = HandleCast(phrsv);
 	}
 
-	// I suppose this could be relaxed to be "any kind of node", but
-	// for debugging, it seems like strict type-checking is better.
-	if (PHRASE_NODE != phra->get_type() and
-	    ITEM_NODE != phra->get_type())
+	const char* phrstr = nullptr;
+	if (phrsv->is_type(NODE))
+		phrstr = HandleCast(phrsv)->get_name().c_str();
+	else
+	if (phrsv->is_type(STRING_VALUE))
+	{
+		const std::vector<std::string>& sli = StringValueCast(phrsv)->value();
+		if (1 != sli.size())
+			throw InvalidParamException(TRACE_INFO,
+				"LGParseLink: Expecting Value of length one");
+		phrstr = sli[0].c_str();
+	}
+	else
 		throw InvalidParamException(TRACE_INFO,
-			"LGParseLink: Expecting PhraseNode, got %s",
-			phra->to_string().c_str());
+			"LGParseLink: Expecting Node or StringValue, got %s",
+			phrsv->to_string().c_str());
 
-	const char* phrstr = phra->get_name().c_str() ;
+	// Now, actually parse.
 	Sentence sent = sentence_create(phrstr, dict);
 	if (nullptr == sent)
 		throw FatalErrorException(TRACE_INFO,
