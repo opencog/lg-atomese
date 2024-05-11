@@ -224,6 +224,10 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	// Set up the dictionary config, if any.
 	// This must happen before ldn->get_dictionary() because the
 	// setup is stateful. This seems buggy, but is adequate for now.
+	// XXX FIXME. This should be part of the LgDictNode but since
+	// LgDictNode is a node, not a link, its hard to pass args.
+	// We would need to wrap it with a StateLink, or maybe use the
+	// new-fangled "sensory API". Sheesh.
 	if (4 <= _outgoing.size())
 	{
 		AtomSpacePtr asp = AtomSpaceCast(_outgoing[3]);
