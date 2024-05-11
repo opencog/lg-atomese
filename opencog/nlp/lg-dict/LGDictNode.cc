@@ -32,7 +32,7 @@
 using namespace opencog;
 
 // ------------------------------------------------------
-// Convert LG errors to opencog log messges
+// Convert LG errors to opencog log messages
 // Not static, its also used by LgParseLink.cc
 void error_handler(lg_errinfo *ei, void *data);
 void error_handler(lg_errinfo *ei, void *data)
@@ -71,7 +71,7 @@ static std::mutex _global_mtx;
 
 /// Get the dictionary associated with the node.  This performs a
 /// delayed open, because we don't really want the open to happen
-/// in the constructor (since the constructor might run mmultiple
+/// in the constructor (since the constructor might run multiple
 /// times!?)
 Dictionary LgDictNode::get_dictionary()
 {

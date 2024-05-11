@@ -719,7 +719,7 @@ HandleSeq LGParseLink::make_conseq(Linkage lkg, int w,
 {
 	std::vector<int> lks;
 
-	// Loop over all links, find the ones which conect to this word.
+	// Loop over all links, find the ones which connect to this word.
 	size_t nlinks = linkage_get_num_links(lkg);
 	for (size_t li=0; li < nlinks; li++)
 	{

@@ -40,7 +40,7 @@ HandleSeq getDictEntry(Dictionary, const std::string& word);
 /**
  * Link Grammar dictionary entry reader.
  *
- * Return true if the dictionary has an antry for this word.
+ * Return true if the dictionary has an entry for this word.
  */
 bool haveDictEntry(Dictionary, const std::string& word);
 

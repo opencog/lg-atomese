@@ -91,7 +91,7 @@
   parse-get-words-in-order - Given PARSE, return a list of all word
   instances in the parse, in sequential order.
 "
-	; Get the scheme-number of the word-sequence numbe
+	; Get the scheme-number of the word-sequence number
 	(define (get-number word-inst)
 		(cog-number (word-inst-get-number word-inst)))
 
