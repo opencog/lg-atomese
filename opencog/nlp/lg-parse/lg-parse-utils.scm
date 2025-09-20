@@ -117,7 +117,7 @@
   Basically, chase a ParseLink to a ParseNode
   Throws an error if sent-node is not a SentenceNode
 "
-	(cog-chase-link-chk 'ParseLink 'ParseNode sent-node 'SentenceNode)
+	(cog-chase-link 'ParseLink 'ParseNode sent-node 'SentenceNode)
 )
 
 ; ---------------------------------------------------------------------
