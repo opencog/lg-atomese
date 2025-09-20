@@ -92,11 +92,19 @@
   A second problem with this function is that the implementation is very
   inefficient and slow.
 "
+
+	; Return other atom of a link connecting two atoms
+	(define (get-partner pare atom)
+		(let ((plist (cog-outgoing-set pare)))
+			(if (equal? atom (car plist))
+				(cadr plist)
+				(car plist))))
+
 	(define (get-set w)
 		(define roots (filter
 			(lambda (l) (equal? (cog-type l) 'LgDisjunct))
 			(cog-incoming-set w)))
-		(map cog-get-partner roots (circular-list w))
+		(map get-partner roots (circular-list w))
 	)
 
 	; Create the dictionary entry as needed
