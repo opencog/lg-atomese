@@ -92,48 +92,6 @@
 	)
 )
 
-; -----------------------------------------------------------------------
-(define-public (cog-chase-link link-type endpoint-type anchor)
-"
-  cog-chase-link -- Return other atom of a link connecting two atoms.
-
-  cog-chase-link link-type endpoint-type anchor
-
-  Starting at the atom 'anchor', chase its incoming links of
-  'link-type', and return a list of all of the atoms of type
-  'endpoint-type' in those links. For example, if 'anchor' is the
-  node 'GivenNode \"a\"', and the atomspace contains
-
-     SomeLink
-         GivenNode \"a\"
-         WantedNode  \"p\"
-
-     SomeLink
-         GivenNode \"a\"
-         WantedNode  \"q\"
-
-  then this method will return the two WantedNodes's, given the
-  GivenNode as anchor, and the link-type 'SomeLink.
-
-  viz: (cog-chase-link 'SomeLink 'WantedNode (GivenNode \"a\")) will
-  return ((WantedNode \"p\") (WantedNode \"q\"))
-
-  It is presumed that 'anchor' points to some atom (typically a node),
-  and that it has many links in its incoming set. So, loop over all of
-  the links of 'link-type' in this set. They presumably link to all
-  sorts of things. Find all of the things that are of 'endpoint-type'.
-  Return a list of all of these.
-"
-	(let ((lst '()))
-		(define (mklist inst)
-			(set! lst (cons inst lst))
-			#f
-		)
-		(cog-map-chase-link link-type endpoint-type mklist anchor)
-		lst
-	)
-)
-
 ; ---------------------------------------------------------------------
 (define-public (cog-get-reference refptr)
 "
