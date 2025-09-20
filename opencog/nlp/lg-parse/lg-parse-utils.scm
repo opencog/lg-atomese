@@ -107,6 +107,44 @@
 )
 
 ; ---------------------------------------------------------------------
+(define-public (cog-map-chase-link link-type endpoint-type proc anchor)
+"
+  cog-map-chase-link -- Invoke proc on atom connected through type.
+
+  Similar to cog-chase-link, but invokes 'proc' on the wanted atom.
+  Starting at the atom 'anchor', chase its incoming links of
+  'link-type', and call procedure 'proc' on all of the atoms of
+  type 'endpoint-type' in those links. For example, if 'anchor' is the
+  node 'GivenNode \"a\"', and the atomspace contains
+
+     SomeLink
+         GivenNode \"a\"
+         WantedNode  \"p\"
+
+     SomeLink
+         GivenNode \"a\"
+         WantedNode  \"q\"
+
+  then 'proc' will be called twice, with each of the WantedNodes's
+  as the argument. These wanted nodes were found by following the
+  link type 'SomeLink, starting at the anchor GivenNode \"a\".
+
+  It is presumed that 'anchor' points to some atom (typically a node),
+  and that it has many links in its incoming set. So, loop over all of
+  the links of 'link-type' in this set. They presumably link to all
+  sorts of things. Find all of the things that are of 'endpoint-type'.
+  Apply proc to each of these.
+"
+	(define (get-endpoint w)
+		(map proc (cog-outgoing-by-type w endpoint-type)))
+
+	; We assume that anchor is a single atom, or empty list...
+	(if (null? anchor)
+		'()
+		(map get-endpoint (cog-incoming-by-type anchor link-type)))
+)
+
+; ---------------------------------------------------------------------
 (define-public (cog-chase-link link-type endpoint-type anchor)
 "
   cog-chase-link -- Return other atom of a link connecting two atoms.
@@ -137,8 +175,6 @@
   the links of 'link-type' in this set. They presumably link to all
   sorts of things. Find all of the things that are of 'endpoint-type'.
   Return a list of all of these.
-
-  See also: cgw-follow-link, which does the same thing, but for wires.
 "
 	(let ((lst '()))
 		(define (mklist inst)
