@@ -35,6 +35,36 @@
 (use-modules (opencog))
 
 ; ---------------------------------------------------------------------
+(define-public (cog-get-link link-type endpoint-type anchor)
+"
+  cog-get-link link-type endpoint-type anchor
+
+  Return a list of links, of type 'link-type', which contain some
+  atom of type 'endpoint-type', and also specifically contain the
+  atom 'anchor'.
+
+  Thus, for example, suppose the atom-space contains a link of the
+  form
+        (ReferenceLink
+            (ConceptNode \"asdf\")
+            (WordNode \"pqrs\")
+        )
+  Then, the call
+     (cog-get-link 'ReferenceLink 'ConceptNode (WordNode \"pqrs\"))
+  will return a list containing that link. Note that \"endpoint-type\"
+  need not occur in the first position in the link; it can appear
+  anywhere.
+
+"
+	(let ((lst '()))
+		(define (mklist inst)
+			(set! lst (cons inst lst))
+			#f)
+		(cog-map-apply-link link-type endpoint-type mklist anchor)
+		lst)
+)
+
+; ---------------------------------------------------------------------
 (define-public (cog-get-pred inst pred-type)
 "
   cog-get-pred -- Find all EvaluationLinks of given form.
