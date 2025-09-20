@@ -35,6 +35,22 @@
 (use-modules (opencog))
 
 ; ---------------------------------------------------------------------
+;
+(define-public (cog-map-apply-link link-type endpoint-type proc anchor)
+"
+  cog-map-apply-link link-type endpoint-type proc anchor
+
+  Similar to cog-map-chase-link, except that the proc is not called
+  on the endpoint, but rather on the link leading to the endpoint.
+"
+	(define (get-link l)
+		(define (apply-link e) (proc l))
+		(for-each apply-link (cog-outgoing-by-type l endpoint-type)))
+
+	(for-each get-link (cog-incoming-by-type anchor link-type))
+)
+
+; ---------------------------------------------------------------------
 (define-public (cog-get-link link-type endpoint-type anchor)
 "
   cog-get-link link-type endpoint-type anchor
