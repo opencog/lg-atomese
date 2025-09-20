@@ -35,9 +35,35 @@
 (use-modules (opencog))
 
 ; ---------------------------------------------------------------------
+(define-public (cog-get-pred inst pred-type)
+"
+  cog-get-pred -- Find all EvaluationLinks of given form.
+
+  Return a list of predicates, of the given type, that an instance
+  participates in.  'inst' must be an atom, and 'pred-type' must be
+  an atom type.  That is, given a \"predicate\" of the form:
+
+     EvaluationLink
+        SomeAtom
+        ListLink
+            AnotherAtom \"abc\"
+            GivenAtom \"def\"
+
+  then, given the instance 'inst' (in this example, GivenAtom \"def\")
+  and predicate type 'pred-type' 'SomeAtom, then this routine returns
+  a list of all of the EvalutaionLink's in which 'inst' appears.
+"
+	(concatenate!
+		(append!
+			(map
+				(lambda (lnk) (cog-get-link 'EvaluationLink pred-type lnk))
+				(cog-incoming-by-type inst 'ListLink))))
+)
+
+; ---------------------------------------------------------------------
 (define-public (sentence-get-parses sent-node)
 "
-  sentence-get-parses    Get parses of a sentence.
+  sentence-get-parses	 Get parses of a sentence.
 
   sentence-get-parses sent-node
 
