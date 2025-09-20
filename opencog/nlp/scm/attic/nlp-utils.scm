@@ -49,6 +49,120 @@
 (use-modules (opencog))
 
 ; ---------------------------------------------------------------------
+; ---------------------------------------------------------------------
+; Some obsolete utilities, removed from the core AtomSpace.
+
+; -----------------------------------------------------------------------
+(define-public (cog-map-chase-link link-type endpoint-type proc anchor)
+"
+  cog-map-chase-link -- Invoke proc on atom connected through type.
+
+  Similar to cog-chase-link, but invokes 'proc' on the wanted atom.
+  Starting at the atom 'anchor', chase its incoming links of
+  'link-type', and call procedure 'proc' on all of the atoms of
+  type 'endpoint-type' in those links. For example, if 'anchor' is the
+  node 'GivenNode \"a\"', and the atomspace contains
+
+     SomeLink
+         GivenNode \"a\"
+         WantedNode  \"p\"
+
+     SomeLink
+         GivenNode \"a\"
+         WantedNode  \"q\"
+
+  then 'proc' will be called twice, with each of the WantedNodes's
+  as the argument. These wanted nodes were found by following the
+  link type 'SomeLink, starting at the anchor GivenNode \"a\".
+
+  It is presumed that 'anchor' points to some atom (typically a node),
+  and that it has many links in its incoming set. So, loop over all of
+  the links of 'link-type' in this set. They presumably link to all
+  sorts of things. Find all of the things that are of 'endpoint-type'.
+  Apply proc to each of these.
+"
+	(define (get-endpoint w)
+		(map proc (cog-outgoing-by-type w endpoint-type))
+	)
+
+	; We assume that anchor is a single atom, or empty list...
+	(if (null? anchor)
+		'()
+		(map get-endpoint (cog-incoming-by-type anchor link-type))
+	)
+)
+
+; -----------------------------------------------------------------------
+(define-public (cog-chase-link link-type endpoint-type anchor)
+"
+  cog-chase-link -- Return other atom of a link connecting two atoms.
+
+  cog-chase-link link-type endpoint-type anchor
+
+  Starting at the atom 'anchor', chase its incoming links of
+  'link-type', and return a list of all of the atoms of type
+  'endpoint-type' in those links. For example, if 'anchor' is the
+  node 'GivenNode \"a\"', and the atomspace contains
+
+     SomeLink
+         GivenNode \"a\"
+         WantedNode  \"p\"
+
+     SomeLink
+         GivenNode \"a\"
+         WantedNode  \"q\"
+
+  then this method will return the two WantedNodes's, given the
+  GivenNode as anchor, and the link-type 'SomeLink.
+
+  viz: (cog-chase-link 'SomeLink 'WantedNode (GivenNode \"a\")) will
+  return ((WantedNode \"p\") (WantedNode \"q\"))
+
+  It is presumed that 'anchor' points to some atom (typically a node),
+  and that it has many links in its incoming set. So, loop over all of
+  the links of 'link-type' in this set. They presumably link to all
+  sorts of things. Find all of the things that are of 'endpoint-type'.
+  Return a list of all of these.
+"
+	(let ((lst '()))
+		(define (mklist inst)
+			(set! lst (cons inst lst))
+			#f
+		)
+		(cog-map-chase-link link-type endpoint-type mklist anchor)
+		lst
+	)
+)
+
+; ---------------------------------------------------------------------
+(define-public (cog-get-reference refptr)
+"
+  Given a reference structure, return the referenced list entries.
+  That is, given a structure of the form
+
+     ReferenceLink
+         SomeAtom
+         ListLink
+            AnotherAtom
+            AnotherAtom
+            ...
+
+  Then, given, as input, \"SomeAtom\", this returns a list of the \"OtherAtom\"
+
+  XXX! Caution/error! This implicitly assumes that there is only one
+  such ReferenceLink in the system, total. This is wrong !!!
+  XXX! You probably want to be using either StateLink or DefineLink
+  for this.
+"
+	(let ((lst (cog-chase-link 'ReferenceLink 'ListLink refptr)))
+		(if (null? lst)
+			'()
+			(cog-outgoing-set (car lst))
+		)
+	)
+)
+
+; ---------------------------------------------------------------------
 (define-public (document-get-sentences DOCO)
 "
   document-get-sentences DOCO -- Get sentences in document DOCO
@@ -74,7 +188,7 @@
   Basically, chase a ParseLink to a ParseNode
   Throws an error if sent-node is not a SentenceNode
 "
-	(cog-chase-link-chk 'ParseLink 'ParseNode sent-node 'SentenceNode)
+	(cog-chase-link 'ParseLink 'ParseNode sent-node 'SentenceNode)
 )
 
 ; -----------------------------------------------------------------------
