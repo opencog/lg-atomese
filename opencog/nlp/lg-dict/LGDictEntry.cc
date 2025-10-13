@@ -153,7 +153,7 @@ LGHaveDictEntry::LGHaveDictEntry(const HandleSeq&& oset, Type t)
 
 // =================================================================
 
-TruthValuePtr LGHaveDictEntry::evaluate(AtomSpace* as, bool silent)
+bool LGHaveDictEntry::bevaluate(AtomSpace* as, bool silent)
 {
 	if (WORD_NODE != _outgoing[0]->get_type())
 	{
@@ -180,9 +180,9 @@ TruthValuePtr LGHaveDictEntry::evaluate(AtomSpace* as, bool silent)
 			ldn->get_name().c_str());
 
 	if (haveDictEntry(dict, _outgoing[0]->get_name()))
-		return TruthValue::TRUE_TV();
+		return true;
 
-	return TruthValue::FALSE_TV();
+	return false;
 }
 
 DEFINE_LINK_FACTORY(LGHaveDictEntry, LG_HAVE_DICT_ENTRY)

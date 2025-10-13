@@ -84,7 +84,7 @@ public:
 	LGHaveDictEntry& operator=(const LGHaveDictEntry&) = delete;
 
 	virtual bool is_evaluatable() const { return true; }
-	virtual TruthValuePtr evaluate(AtomSpace*, bool);
+	virtual bool bevaluate(AtomSpace*, bool);
 
 	static Handle factory(const Handle&);
 };
