@@ -49,5 +49,5 @@ INSTALL (FILES
 	LGDictEntry.h
 	LGDictNode.h
 	LGDictUtils.h
-	DESTINATION "include/${PROJECT_NAME}/nlp/lg-dict"
+	DESTINATION "include/opencog/nlp/lg-dict"
 )
