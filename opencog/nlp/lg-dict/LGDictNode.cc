@@ -115,7 +115,8 @@ void LgDictNode::setAtomSpace(AtomSpace* as)
 Handle LgDictNode::factory(const Handle& base)
 {
 	if (LgDictNodeCast(base)) return base;
-	Handle h(createLgDictNode(std::move(base->get_name())));
+	std::string dname = base->get_name();
+	Handle h(createLgDictNode(std::move(dname)));
 	return h;
 }
 
