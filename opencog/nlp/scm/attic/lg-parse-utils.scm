@@ -1,5 +1,6 @@
 ;
 ; lg-parse-utils.scm
+; OBSOLETE. Here for reference purposes only.
 ;
 ; Assorted utilities for working with the LgParseLink output.
 ; Operations include:
