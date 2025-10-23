@@ -1,7 +1,7 @@
 ;
-; lg-dict.scm
+; lg-dict-utils.scm
 ;
-; OBSOLETE
+; OBSOLETE -- Here for reference purposes only.
 ; Link Grammar dictionary API
 ;
 
