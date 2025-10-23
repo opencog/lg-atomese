@@ -30,8 +30,7 @@ scm
 The scm directory defines the `(opencog nlp)` guile module. It has this
 name (instead of `(opencog lg-atomese)`) in order to preserve backwards
 compatibility with older code. This module provides basic type
-defintions, and assorted scripts for pulling out bits and pieces of
-LG markup from a parsed sentence.
+defintions.
 
 types
 -----
