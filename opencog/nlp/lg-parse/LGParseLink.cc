@@ -33,6 +33,7 @@
 #include <opencog/atoms/core/NumberNode.h>
 #include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atoms/value/StringValue.h>
+#include <opencog/atoms/value/VoidValue.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/persist/api/StorageNode.h>
 #include <opencog/nlp/lg-dict/LGDictNode.h>
@@ -277,11 +278,19 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	if (phrsv->is_type(STRING_VALUE))
 	{
 		const std::vector<std::string>& sli = StringValueCast(phrsv)->value();
+
+		// Zero-length StringValue denotes end-of-file. Pass it on.
+		if (0 == sli.size())
+			return createVoidValue();
+
 		if (1 != sli.size())
 			throw InvalidParamException(TRACE_INFO,
 				"LGParseLink: Expecting Value of length one");
 		phrstr = sli[0].c_str();
 	}
+	// Voids are a form of end-of-file marker
+	else if (VOID_VALUE == phrsv->get_type())
+		return phrsv;
 	else
 		throw InvalidParamException(TRACE_INFO,
 			"LGParseLink: Expecting Node or StringValue, got %s",
