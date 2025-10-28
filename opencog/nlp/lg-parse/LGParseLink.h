@@ -67,14 +67,6 @@ public:
 	static Handle factory(const Handle&);
 };
 
-class LGParseMinimal : public LGParseLink
-{
-public:
-	LGParseMinimal(const HandleSeq&&, Type=LG_PARSE_MINIMAL);
-	LGParseMinimal(const LGParseMinimal&) = delete;
-	LGParseMinimal& operator=(const LGParseMinimal&) = delete;
-};
-
 class LGParseDisjuncts : public LGParseLink
 {
 public:
@@ -101,9 +93,6 @@ public:
 
 LINK_PTR_DECL(LGParseLink)
 #define createLGParseLink CREATE_DECL(LGParseLink)
-
-LINK_PTR_DECL(LGParseMinimal)
-#define createLGParseMinimal CREATE_DECL(LGParseMinimal)
 
 LINK_PTR_DECL(LGParseDisjuncts)
 #define createLGParseDisjuncts CREATE_DECL(LGParseDisjuncts)
