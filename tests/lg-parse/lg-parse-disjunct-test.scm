@@ -1,5 +1,5 @@
 ;
-; test-disjuncts.scm
+; lg-parse-disjunct-test.scm
 ;
 ; Super-simple unit test, based on example
 
@@ -24,7 +24,7 @@
 (define test-dj
 	(cog-link 'LgDisjunct
 		(WordNode "test")
-		(LgAnd
+		(ConnectorSeq
 			(LgConnector
 				(LgConnNode "Ds**c")
 				(LgConnDirNode "-"))

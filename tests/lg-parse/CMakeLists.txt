@@ -1,2 +1,2 @@
 
-ADD_GUILE_TEST(TestDisjuncts test-disjuncts.scm)
+ADD_GUILE_TEST(LgParseDisjunctTest lg-parse-disjunct-test.scm)
