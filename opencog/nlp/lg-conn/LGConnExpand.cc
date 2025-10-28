@@ -66,47 +66,105 @@ void LGConnExpand::init()
 			"LgConnExpand: Expecting one argument, got %lu", osz);
 
 	Type t = oset[0]->get_type();
-	if (LG_CONN_NODE != t)
+	if (LG_CONN_NODE != t && LG_CONNECTOR != t)
 		throw InvalidParamException(TRACE_INFO,
-			"LgConnExpand: Expecting LgConnNode, got %s",
+			"LgConnExpand: Expecting LgConnNode or LgConnector, got %s",
 			oset[0]->to_string().c_str());
 }
 
 ValuePtr LGConnExpand::execute(AtomSpace* as, bool silent)
 {
-	// Get the connector string
-	const std::string& conn_str = _outgoing[0]->get_name();
+	std::string conn_str;
+	Handle dir_handle;
+	Handle multi_handle;
+
+	// Extract components based on input type
+	Type input_type = _outgoing[0]->get_type();
+
+	if (LG_CONN_NODE == input_type)
+	{
+		// Simple case: just a connector string
+		conn_str = _outgoing[0]->get_name();
+	}
+	else if (LG_CONNECTOR == input_type)
+	{
+		// Complex case: LgConnector with children
+		const HandleSeq& connector_parts = _outgoing[0]->getOutgoingSet();
+
+		for (const Handle& part : connector_parts)
+		{
+			Type pt = part->get_type();
+			if (LG_CONN_NODE == pt)
+				conn_str = part->get_name();
+			else if (LG_CONN_DIR_NODE == pt)
+				dir_handle = part;
+			else if (LG_CONN_MULTI_NODE == pt)
+				multi_handle = part;
+		}
+	}
 
 	if (conn_str.empty())
 		throw InvalidParamException(TRACE_INFO,
 			"LgConnExpand: Empty connector string");
 
 	// Parse the connector string
-	// Leading capital letters form the main type
 	size_t i = 0;
-	while (i < conn_str.length() && isupper(conn_str[i]))
-		i++;
-
-	if (i == 0)
-		throw InvalidParamException(TRACE_INFO,
-			"LgConnExpand: Connector string must start with capital letter: %s",
-			conn_str.c_str());
-
-	std::string main_type = conn_str.substr(0, i);
-
-	// Build the output handle sequence
+	size_t len = conn_str.length();
 	HandleSeq outgoing;
 
-	// Add the main connector type
-	outgoing.push_back(createNode(LG_CONN_TYPE, std::move(main_type)));
+	// Leading @ (multi-connector) - only if not already provided in LgConnector
+	if (i < len && conn_str[i] == '@')
+	{
+		if (!multi_handle)
+			multi_handle = createNode(LG_CONN_MULTI_NODE, "@");
+		i++;
+	}
 
-	// Add each subsequent character as a subtype
-	while (i < conn_str.length())
+	// Leading lowercase letters (subtypes before main type)
+	while (i < len && islower(conn_str[i]))
 	{
 		std::string subtype(1, conn_str[i]);
 		outgoing.push_back(createNode(LG_SUB_TYPE, std::move(subtype)));
 		i++;
 	}
+
+	// Sequence of uppercase letters (main type)
+	size_t start = i;
+	while (i < len && isupper(conn_str[i]))
+		i++;
+
+	if (i > start)
+	{
+		std::string main_type = conn_str.substr(start, i - start);
+		outgoing.push_back(createNode(LG_CONN_TYPE, std::move(main_type)));
+	}
+
+	// Trailing lowercase letters and wildcards (subtypes after main type)
+	while (i < len && (islower(conn_str[i]) || conn_str[i] == '*'))
+	{
+		std::string subtype(1, conn_str[i]);
+		outgoing.push_back(createNode(LG_SUB_TYPE, std::move(subtype)));
+		i++;
+	}
+
+	// Trailing +/- (direction) - only if not already provided in LgConnector
+	if (i < len && (conn_str[i] == '+' || conn_str[i] == '-'))
+	{
+		if (!dir_handle)
+		{
+			std::string direction(1, conn_str[i]);
+			dir_handle = createNode(LG_CONN_DIR_NODE, std::move(direction));
+		}
+		i++;
+	}
+
+	// Add direction if present
+	if (dir_handle)
+		outgoing.push_back(dir_handle);
+
+	// Add multi-connector if present
+	if (multi_handle)
+		outgoing.push_back(multi_handle);
 
 	// Return as a Connector link
 	return createLink(outgoing, CONNECTOR);

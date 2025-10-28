@@ -27,23 +27,34 @@
 namespace opencog
 {
 
-/// The LgConnExpand link expands a Link Grammar connector string
-/// into its constituent parts: the main link type (leading capital
-/// letters) and subscript modifiers (subsequent characters).
+/// The LgConnExpand link expands a Link Grammar connector into its
+/// constituent parts: subtypes, main type, and direction.
 ///
-/// The expected format is:
+/// The expected format can be either:
 ///
 ///     LgConnExpand
-///         LgConnNode "Ds**c"
+///         LgConnNode "hWV+"
 ///
-/// When executed, this returns:
+/// or
+///
+///     LgConnExpand
+///         LgConnector
+///             LgConnNode "NXi"
+///             LgConnDir "-"
+///             LgConnMulti "@"
+///
+/// When executed, these return respectively:
 ///
 ///     Connector
-///         LgConnType "D"
-///         LgSubType "s"
-///         LgSubType "*"
-///         LgSubType "*"
-///         LgSubType "c"
+///         LgSubType "h"
+///         LgConnType "WV"
+///         LgConnDir "+"
+///
+///     Connector
+///         LgConnType "NX"
+///         LgSubType "i"
+///         LgConnDir "-"
+///         LgConnMulti "@"
 ///
 class LGConnExpand : public FunctionLink
 {
