@@ -35,6 +35,14 @@ LG_CONNECTOR <- CONNECTOR   // e.g. "MX+"
 // Ideally, these are fully disjoined before use.
 LG_DISJUNCT <- SECTION
 
+// Connector expressions, used to expand (LgConnnector "Ds**c")
+// ito its main type and it's subscripts.
+LG_CONN_TYPE <- LEXICAL_NODE
+LG_SUB_TYPE <- LEXICAL_NODE
+
+// The function that performs the connector expansion
+LG_CONN_EXPAND <- FUNCTION_LINK
+
 // ---------------------------------------------------------------
 // Link Grammar dictionary types.
 // See
