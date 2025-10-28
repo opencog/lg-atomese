@@ -42,8 +42,8 @@
 ; tools.
 
 ; Is a word in a dictionary? Returns true or false:
-(cog-evaluate! (LgHaveDictEntry (Word "доктор") (LgDictNode "ru")))
-(cog-evaluate! (LgHaveDictEntry (Word "дasdf") (LgDictNode "ru")))
+(cog-execute! (LgHaveDictEntry (Word "доктор") (LgDictNode "ru")))
+(cog-execute! (LgHaveDictEntry (Word "дasdf") (LgDictNode "ru")))
 
 ; Note that `cog-evaluate!` is used here, not `cog-execute!`
 
