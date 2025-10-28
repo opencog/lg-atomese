@@ -3,6 +3,7 @@
 
 ADD_SUBDIRECTORY (types)
 
+ADD_SUBDIRECTORY (lg-conn)
 ADD_SUBDIRECTORY (lg-dict)
 IF (HAVE_UUID)
 	ADD_SUBDIRECTORY (lg-parse)
