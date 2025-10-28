@@ -355,7 +355,6 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 
 	// Avoid generating big piles of Atoms, if the user did not
 	// want them. (The extra Atoms describe disjuncts, etc.)
-	bool minimal = (get_type() == LG_PARSE_MINIMAL);
 	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
 	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
 	bool bondonly = (get_type() == LG_PARSE_BONDS);
@@ -379,16 +378,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		// LG sentence_split() returned non-zero value.
 		// In this case, there really are no parses.
 
-		// Empty LinkValue for those guys expecting LinkValue
-		if (sectonly or bondonly or djonly)
-			return createLinkValue();
-
-		// Bogus SentenceNode. This might make downstream choke!?
-		char idstr[37];
-		uuid_unparse(0, idstr);
-		char sentstr[47] = "sentence@";
-		strcat(sentstr, idstr);
-		return as->add_node(SENTENCE_NODE, sentstr);
+		return createLinkValue();
 	}
 
 	// If num_links is zero, try again, allowing null linked words.
@@ -419,22 +409,6 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	if ((max_linkages > 0) && (max_linkages < num_linkages))
 		num_linkages = max_linkages;
 
-	// Create the SentenceNode only for the old-style output
-	Handle snode;
-	char sentstr[47] = "sentence@";
-	if (not (sectonly or bondonly or djonly))
-	{
-		// Hmm. I hope that uuid_generate() won't block if there is not
-		// enough entropy in the entropy pool....
-		uuid_t uu;
-		uuid_generate(uu);
-		char idstr[37];
-		uuid_unparse(uu, idstr);
-		strcat(sentstr, idstr);
-
-		snode = as->add_node(SENTENCE_NODE, sentstr);
-	}
-
 	// There are only so many parses available.
 	int num_available = sentence_num_linkages_post_processed(sent);
 
@@ -446,6 +420,8 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		if (0 < sentence_num_violations(sent, i)) continue;
 		jct ++;
 		Linkage lkg = linkage_create(i, sent, opts);
+
+		// Why is this if/else-if? Why no concatenate them?
 		if (sectonly)
 		{
 			ValuePtr sects(make_sects(lkg, phrstr, as));
@@ -462,11 +438,6 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		{
 			vlist.emplace_back(make_djs(lkg, phrstr, as));
 		}
-		else
-		{
-			Handle pnode = cvt_linkage(lkg, i, sentstr, phrstr, minimal, as);
-			as->add_link(PARSE_LINK, pnode, snode);
-		}
 		linkage_delete(lkg);
 	}
 
@@ -476,10 +447,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	lg_error_clearall();
 
 	// Return a LinkValue holding all of the disjuncts
-	if (sectonly or bondonly or djonly)
-		return createLinkValue(vlist);
-
-	return snode;
+	return createLinkValue(vlist);
 }
 
 static std::atomic<unsigned long> wcnt;
