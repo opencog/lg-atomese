@@ -6,8 +6,8 @@ in the AtomSpace.
 ## Scheme module `(opencog nlp lg-dict)`
 
 Defines `LgDictNode`, `LgDictEntry` and `LgHaveDictEntry`.  These can
-be used to look up Link Grammar dictionary entries, and place them
-into the AtomSpace.  For example:
+be used to look up Link Grammar dictionary entries, and generate an
+Atomese expression for them, returning that expression.
 
 ```
 	(use-modules (opencog) (opencog nlp) (opencog nlp lg-dict))
@@ -18,32 +18,16 @@ into the AtomSpace.  For example:
 			(LgDictNode "en")))
 ```
 will look up the word "..." in the English language Link Grammar
-dictionary, and place the resulting disjuncts into the AtomSpace.
-The `(cog-incoming-set (WordNode "..."))` should resemble the below:
-
-  ```
+dictionary, and return a LinkValue of expressions of the form.
+```
    (LgDisjunct
-      (WordNode "...")
       (LgConnector
          (LgConnNode "Sp")
-         (LgConnDirNode "-")
-      )
-   )
-   (LgDisjunct
-      (WordNode "...")
-      (LgAnd
-         (LgConnector
-            (LgConnNode "Sp")
-            (LgConnDirNode "-")
-         )
-         (LgConnector
-            (LgConnNode "dWV")
-            (LgConnDirNode "-")
-         )
-         ...
-      )
-   )
-  ```
+         (LgConnDirNode "-"))
+      (LgConnector
+         (LgConnNode "dWV")
+         (LgConnDirNode "-")))
+```
 
 Because the above is quite verbose, there is a fast, high-speed way
 for checking to see if a dictionary entry exists in the dictionary,
@@ -56,9 +40,8 @@ same syntax as `LgDictEntry` except that it will return either true of false:
 			(LgDictNode "en")))
 ```
 
-The disjuncts are in [Disjunctive Normal Form](http://en.wikipedia.org/wiki/Disjunctive_normal_form) (DNF)
-where `LgOr` and `LgAnd` correspond to the `or` and `&` notation of LG.
-Note that `LgOr` is actually a menu choice, and NOT a boolean OR.
+The term "disjunct" arises because the connectors are listed in
+[Disjunctive Normal Form](http://en.wikipedia.org/wiki/Disjunctive_normal_form) (DNF).
 
 Each LG connector is fully described within the `LgConnector` link,
 with the connector name in `LgConnNode`, direction in `LgConnDirNode`,
@@ -82,8 +65,8 @@ In addition, the following scheme utilities are provided:
   the same type (aka. connector name).  Proper handling of subscripts &
   head/tail are included.
 
-  The same code could have been done purely in scheme, but instead in C++ for
-  performance reason (for SuReal usage).
+  The same code could have been done purely in scheme, for historical reasons.
+  Use of this function is deprecated.
 
 - `(lg-conn-linkable? (LgConnector ...) (LgConnector ...))`
 
@@ -93,6 +76,9 @@ In addition, the following scheme utilities are provided:
 
   This function does not care which connector is "-" and which is "+", as long
   as they are different.
+
+  Use of this function is deprecated. If it is really needed, a new
+  Atom should be created that implements this.
 
 ## TODO - Architecture and design issues.
 The core design of this module has a number of issues, some minor, and
