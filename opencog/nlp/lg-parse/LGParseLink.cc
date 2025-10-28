@@ -464,7 +464,7 @@ ValuePtr LGParseLink::make_djs(Linkage lkg, const char* phrstr,
 		// Set up the disjuncts on each word
 		Handle dj = as->add_link(LG_DISJUNCT,
 			as->add_node(WORD_NODE, std::move(wrd)),
-			as->add_link(LG_AND, std::move(conseq)));
+			as->add_link(CONNECTOR_SEQ, std::move(conseq)));
 
 		djs.emplace_back(dj);
 	}

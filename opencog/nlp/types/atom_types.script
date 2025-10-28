@@ -10,7 +10,30 @@
 WORD_NODE <- ITEM_NODE
 WORD_CLASS_NODE <- ITEM_CLASS_NODE  // A signifier of a set of words
 
+// Untokenized sentences.
 PHRASE_NODE <- ITEM_NODE
+
+// ---------------------------------------------------------------
+// Atoms for describing LG structures, i.e. connectors, sequences and
+// disjuncts. These are used by both the parser, and the dict-entry
+// lookup code.
+
+// Connector: same meaning and syntax as in link-grammar, except that
+// the direction and the multi-connector parts get distinct types.
+LG_CONN_NODE <- LEXICAL_NODE   // e.g. "MX"
+LG_CONN_MULTI_NODE <- LEXICAL_NODE  // multi-connector "@"
+LG_CONN_DIR_NODE <- SEX_NODE  // e.g. "+"
+
+// Consists of the connector node, the direction, and possibly the
+// multi-connector node.
+LG_CONNECTOR <- CONNECTOR   // e.g. "MX+"
+
+// LG-specific Section
+// First atom must be a WordNode or WordInstanceNode.
+// Second atom must be a "connector set": that is, a collection of
+// LgConnectors, joined with LgOr, LgAnd links.
+// Ideally, these are fully disjoined before use.
+LG_DISJUNCT <- SECTION
 
 // ---------------------------------------------------------------
 // Link Grammar dictionary types.
@@ -28,30 +51,11 @@ LG_HAVE_DICT_ENTRY <- CRISP_OUTPUT_LINK
 // Looks up a single word in the LG dictionary
 LG_DICT_ENTRY <- FUNCTION_LINK
 
+// ---------------------------------------------------------------
 // Parser - parses sentences.
 LG_PARSE_LINK <- FUNCTION_LINK
 LG_PARSE_DISJUNCTS <- LG_PARSE_LINK
 LG_PARSE_SECTIONS <- LG_PARSE_LINK
 LG_PARSE_BONDS <- LG_PARSE_LINK
-
-// Connector: same meaning and syntax as in link-grammar, except that
-// the direction and the multi-connector parts get distinct types.
-LG_CONN_NODE <- LEXICAL_NODE   // e.g. "MX"
-LG_CONN_MULTI_NODE <- LEXICAL_NODE  // multi-connector "@"
-LG_CONN_DIR_NODE <- SEX_NODE  // e.g. "+"
-
-// Consists of the connector node, the direction, and possibly the
-// multi-connector node.
-LG_CONNECTOR <- CONNECTOR   // e.g. "MX+"
-
-LG_SEQ <- LIST_LINK   // Just an ordered sequence, without other semantics.
-LG_AND <- LG_SEQ      // must be ordered! (like SEQUNTIAL_AND_LINK)
-
-// LG-specific Section
-// First atom must be a WordNode or WordInstanceNode.
-// Second atom must be a "connector set": that is, a collection of
-// LgConnectors, joined with LgOr, LgAnd links.
-// Ideally, these are fully disjoined before use.
-LG_DISJUNCT <- SECTION
 
 // ------------------------- END OF FILE -------------------

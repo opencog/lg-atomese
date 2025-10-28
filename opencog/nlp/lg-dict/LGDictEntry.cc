@@ -22,6 +22,7 @@
  */
 
 #include <opencog/atoms/atom_types/NameServer.h>
+#include <opencog/atoms/value/LinkValue.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include "LGDictNode.h"
 #include "LGDictEntry.h"
@@ -108,7 +109,7 @@ ValuePtr LGDictEntry::execute(AtomSpace* as, bool silent)
 	HandleSeq djs = getDictEntry(dict, _outgoing[0]->get_name());
 	for (const Handle& dj: djs) as->add_atom(dj);
 
-	return _outgoing[0];
+	return createLinkValue(djs);
 }
 
 DEFINE_LINK_FACTORY(LGDictEntry, LG_DICT_ENTRY)
