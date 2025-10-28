@@ -48,10 +48,9 @@ The `(cog-incoming-set (WordNode "..."))` should resemble the below:
 Because the above is quite verbose, there is a fast, high-speed way
 for checking to see if a dictionary entry exists in the dictionary,
 without loading it: the is the `LgHaveDictEntry` link. It has the
-same syntax as `LgDictEntry` except that it is evaluatable, and will
-evaluate to either true of false:
+same syntax as `LgDictEntry` except that it will return either true of false:
 ```
-	(cog-evaluate!
+	(cog-execute!
 		(LgHaveDictEntry
 			(WordNode "blorgel-bargel")
 			(LgDictNode "en")))
