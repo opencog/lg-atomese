@@ -2,14 +2,8 @@
 Link Grammar parsing
 ====================
 
-Perform a Link Grammar parse of a sentence, and insert the results into
-the AtomSpace.  Two of the provided functions were designed to be
-compatible with the LG subset of the RelEx parse. Two others are more
-modern and easier to use. As of 2018, RelEx is obsolete and no longer
-supported, and so this provides a suitable upgrade path for that format.
-
-Full documentation for the output format is here:
-https://wiki.opencog.org/w/Sentence_representation
+Perform a Link Grammar parse of a sentence, returning the results in various
+formats.
 
 LgParseLink
 -----------
@@ -56,10 +50,7 @@ LgParseDisjuncts
 https://wiki.opencog.org/w/LgParseDisjuncts
 
 This returns a LinkValue holding the different parses; each parse is a
-LinkValue for the disjuncts in that parse, in sequence. This has the
-advantage of being easier to use than the rather clunky RelEx format.
-Also, it avoids the creation of WordInstances, and thus significantly
-reduces the number of atoms placed in the AtomSpace.
+LinkValue for the disjuncts in that parse, in sequence.
 
 LgParseSections
 ---------------
