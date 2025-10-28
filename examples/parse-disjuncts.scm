@@ -3,10 +3,11 @@
 ;
 ; The Link Grammar parser will parse natural language sentences,
 ; returning a dependency graph of how the words are connected.
-; The Atomese API for the LG parser converts that graph into
-; Atomese format. This format is quite verbose, and some applications
-; do not need the full parse information. This demo illustrates how
-; to get the disjuncts, only, without the rest of the parse info.
+; There are multiple ways to think about the resulting parse:
+; -- As a collection of bonds between word pairs (LgParseBond)
+; -- As a collection of disjuncts, one per word, chosen for the parse/
+; -- As a collection of sections, one per word, showing connections.
+;
 ; -----------------------------------------------------------------
 
 ; Load the guile modules
