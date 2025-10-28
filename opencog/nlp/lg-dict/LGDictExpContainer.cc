@@ -259,10 +259,11 @@ HandleSeq LGDictExpContainer::to_handle(const Handle& hWordNode)
         outgoing.insert(outgoing.end(), q.begin(), q.end());
     }
 
+    // LG_DISJUNCT contains connectors directly (no LG_AND wrapper, no WordNode)
     if (m_type == AND_type)
-        return { Handle(createLink(std::move(outgoing), LG_AND)) };
+        return { Handle(createLink(std::move(outgoing), LG_DISJUNCT)) };
 
-    // remove repeated atoms from OR
+    // OR_type returns the collected disjuncts
     if (m_type == OR_type)
     {
         // XXX FIXME ... using an std::map would be more efficient.
@@ -270,11 +271,8 @@ HandleSeq LGDictExpContainer::to_handle(const Handle& hWordNode)
         outgoing.erase(std::unique(outgoing.begin(),
                                    outgoing.end()),
                                    outgoing.end());
-        HandleSeq qDisjuncts;
-        for (const Handle& h : outgoing)
-            qDisjuncts.push_back(Handle(createLink(LG_DISJUNCT, hWordNode, h)));
 
-        return qDisjuncts;
+        return outgoing;
     }
 
     // Should never get here
