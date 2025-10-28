@@ -29,8 +29,7 @@
 (define (prt-sect port sect)
 	(prt-node port (gar sect))
 	(format port " : ")
-	(prt-cnsq port (gdr sect))
-	(format port " [~D];\n" (cog-count sect)))
+	(prt-cnsq port (gdr sect)))
 
 ; Print a list of disjuncts
 ;
