@@ -61,12 +61,14 @@
 ;
 
 ; -----------------------------------------------------------------
-; Parse an example sentence, returning the bonds (links)
+; Same as above, but return the disjuncts that were selected for
+; the parse.
+;
 (cog-execute!
-	(LgParseDisjuncts    ; Parse, but return only the disjuncts.
-		(PhraseNode "this is a test.")   ; The example sentence
-		(LgDictNode "en")  ; The dictionary to use - English in this case.
-		(NumberNode 1)))   ; The number of parses to perform.
+	(LgParseDisjuncts
+		(PhraseNode "this is a test.")
+		(LgDictNode "en")
+		(NumberNode 1)))
 
 ; One of the disjuncts will look like this:
 ;
@@ -82,10 +84,42 @@
 ;
 ; which says that the word `this` had the disjunct `Wd- & Ss*b+` on it.
 ;
-; Note that this format does NOT include any info about which
-; word-instance this was in the sentence, nor which words the
-; connectors connected to. That info is available by using the
-; `LgParseLink` parser.
+; This format does NOT include any info about which connectors connected
+; to which other connectors. In principle, this can be deduced by the fact
+; that LG parses are always planar, and so there are no link-crossings.
+; Alternately, LgParseBinds returns this info directly.
 
+; -----------------------------------------------------------------
+; Same as above, but return the disjuncts, represented as Sections.
+;
+(cog-execute!
+	(LgParseSections
+		(PhraseNode "this is a test.")
+		(LgDictNode "en")
+		(NumberNode 1)))
+
+; One of the sections will look like this:
+;
+;      (Section
+;        (Word "this")
+;        (ConnectorSeq
+;          (Connector
+;            (Word "###LEFT-WALL###")
+;            (Sex "-"))
+;          (Connector
+;            (Word "is")
+;            (Sex "+"))))
+;
+; Comparing this to the disjunct representation, the same connectivity
+; pattern is reported, except that each LgConnector is replaced by the
+; target link word.
+;
+; The type of the connection is not reported. The type of the connection
+; can be thought of as a classification: the word-pair (this,is) belongs
+; to the bond class "Ss*b". It is an instance in that class. The
+; classification is not unique; the word pair (this,is) may obtain other
+; bond-class assignments, depending on the parse of the sentence as a
+; whole.
+;
 ; ---------------------
 ; That's all, folks!
