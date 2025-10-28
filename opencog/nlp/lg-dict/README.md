@@ -77,18 +77,6 @@ disjunct containing 5+ connectors).**
 
 
 In addition, the following scheme utilities are provided:
-- `(lg-dict-entry (WordNode "..."))`
-
-  Wraps up the above-described `(cog-execute (LgDictEntry ...))` into
-  a nice short convenience utility.
-
-- `(lg-get-dict-entry (WordNode "..."))`
-
-  Identical to calling `(SetLink (lg-dict-entry (WordNode "...")))`
-  Deprecated!  Using the SetLink in this fashion causes a number of
-  problems; SetLinks should not be used as dumping grounds for random
-  assortments of atoms!
-
 - `(lg-conn-type-match? (LgConnector ...) (LgConnector ...))`
 
   Takes two `LgConnector` links as input, and check if the two connectors has
@@ -107,24 +95,19 @@ In addition, the following scheme utilities are provided:
   This function does not care which connector is "-" and which is "+", as long
   as they are different.
 
-## TODO - architecture and design issues.
+## TODO - Architecture and design issues.
 The core design of this module has a number of issues, some minor, and
 some pretty important.
 
 * Handling of optional links is currently broken.
 
-* The `lg-get-dict-entry` returns a SetLink. It is deprecated; use
-  the `lg-dict-entry` method instead. Alternately, perhaps the
-  `lg-get-dict-entry` could be redesigned to return a LinkValue,
-  instead?
+* The LgDictEntry fails to perform regex lookup of the word.
+  Properly, this is a bug in the link-grammar API for word lookup;
+  regexes should have been handled automatically.
+  This will take a few afternoons to fix.
 
-* The `lg-get-dict-entry` and `lg-dict-entry` methods fail to perform
-  regex lookup of the word. Properly, this is a bug in the link-grammar
-  API for word lookup; regexes should have been handled automatically.
-  this will take a few afternoons to fix.
-
-* The `lg-get-dict-entry` and `lg-dict-entry` do the wrong thing, or
-  are invalid/inappropriate, if the word has a non-trivial morphology
+* The LgDictEntry does the wrong thing, or does invalid/inappropriate
+  things, if the word has a non-trivial morphology
   (i.e. can be split into multiple morphemes). In LG, each morpheme
   is treated as a "word", and so a single word-string can be split
   in several different ways (i.e. have multiple splittings).  Word
@@ -137,9 +120,7 @@ some pretty important.
   part of the beauty of the disjunct style.
 
   Right now, this is low priority, since only Russian currently has a
-  non-trivial morphology, and we don't handle Russian.  The other
-  reason is that SuReal and MicroPlanning are the only users of this
-  system, and those are also ignorant of morphology.
+  non-trivial morphology, and we don't handle Russian.
 
 * The format of the word-disjunct association in the AtomSpace does not
   indicate which dictionary the disjuncts came from. This prevents

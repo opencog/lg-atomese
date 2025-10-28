@@ -12,13 +12,8 @@
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog nlp) (opencog nlp lg-dict))
 
-; For English only, there is a very simple utility for looking up
-; individual words -- `lg-dict-entry`. Use it like so:
-(lg-dict-entry (Word "yikes"))
-
-; That's all there's to it. For languages other than English,
-; there's only a little bit more to do. Here is the above example,
-; again, in it's direct form:
+; Dictionary lookup just requires the word, and the dictionary to
+; look at.
 (cog-execute! (LgDictEntry (Word "yikes") (LgDictNode "en")))
 (cog-incoming-by-type (Word "yikes") 'LgDisjunct)
 
