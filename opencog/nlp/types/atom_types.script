@@ -44,16 +44,8 @@ LG_CONN_DIR_NODE <- SEX_NODE  // e.g. "+"
 // multi-connector node.
 LG_CONNECTOR <- CONNECTOR   // e.g. "MX+"
 
-// These vaguely resemble AND_LINK and OR_LINK, but DO NOT BE FOOLED!
-// They are not really the same, as they are not boolean; rather they
-// behave like "linear logic" operators.  In particular, LG_OR is an
-// exclusive-OR disjunction (only one choice can be picked).
-// Thus, we create brand-new types here, to avoid having to re-cycle
-// AND_LINK, OR_LINK with different, conflicting meanings.
-//
 LG_SEQ <- LIST_LINK   // Just an ordered sequence, without other semantics.
 LG_AND <- LG_SEQ      // must be ordered! (like SEQUNTIAL_AND_LINK)
-LG_OR  <- CHOICE_LINK // Exclusive-OR, completely disjunctive.
 
 // LG-specific Section
 // First atom must be a WordNode or WordInstanceNode.
