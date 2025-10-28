@@ -259,9 +259,8 @@ HandleSeq LGDictExpContainer::to_handle(const Handle& hWordNode)
         outgoing.insert(outgoing.end(), q.begin(), q.end());
     }
 
-    // LG_DISJUNCT contains connectors directly (no LG_AND wrapper, no WordNode)
     if (m_type == AND_type)
-        return { Handle(createLink(std::move(outgoing), LG_DISJUNCT)) };
+        return { Handle(createLink(std::move(outgoing), CONNECTOR_SEQ)) };
 
     // OR_type returns the collected disjuncts
     if (m_type == OR_type)
