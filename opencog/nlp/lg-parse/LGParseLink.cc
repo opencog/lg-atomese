@@ -345,6 +345,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 	bool djonly = (get_type() == LG_PARSE_DISJUNCTS);
 	bool sectonly = (get_type() == LG_PARSE_SECTIONS);
 	bool bondonly = (get_type() == LG_PARSE_BONDS);
+	bool everything = (get_type() == LG_PARSE_LINK);
 
 	// Count the number of parses.
 	int num_linkages = sentence_parse(sent, opts);
@@ -408,7 +409,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		jct ++;
 		Linkage lkg = linkage_create(i, sent, opts);
 
-		// Why is this if/else-if? Why no concatenate them?
+		// Provide the requested info.
 		if (sectonly)
 		{
 			ValuePtr sects(make_sects(lkg, phrstr, as));
@@ -424,6 +425,14 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 		else if (djonly)
 		{
 			vlist.emplace_back(make_djs(lkg, phrstr, as));
+		}
+		else if (everything)
+		{
+			ValuePtr words(make_words(lkg, phrstr, as));
+			ValuePtr bonds(make_bonds(lkg, phrstr, as));
+			ValuePtr disjs(make_djs(lkg, phrstr, as));
+			ValuePtr sects(make_sects(lkg, phrstr, as));
+			vlist.emplace_back(createLinkValue(ValueSeq({words, bonds, disjs, sects})));
 		}
 		linkage_delete(lkg);
 	}
@@ -640,7 +649,6 @@ std::string LGParseLink::get_word_string(Linkage lkg, int w,
 
 	// LEFT-WALL is not an ordinary word. Its special. Make it
 	// extra-special by adding "illegal" punctuation to it.
-	// FYI, this is compatible with Relex, relex2logic.
 	if (0 == w and 0 == strcmp(wrd, "LEFT-WALL"))
 		return "###LEFT-WALL###";
 

@@ -1,208 +1,125 @@
 ;
-; parse.scm -- Demonstration of parsing sentences with Link Grammar.
+; parse.scm -- Demo showing the different kinds of availble parse info.
 ;
 ; The Link Grammar parser will parse natural language sentences,
 ; returning a dependency graph of how the words are connected.
-; The Atomese API for the LG parser converts that graph into
-; Atomese format. This format is quite verbose, and so most
-; of this demo is an examination of that format.
+; There are multiple ways to think about the resulting parse:
+; -- As a collection of bonds between word pairs (LgParseBond)
+; -- As a collection of disjuncts, one per word, chosen for the parse/
+; -- As a collection of sections, one per word, showing connections.
+;
 ; -----------------------------------------------------------------
 
 ; Load the guile modules
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog nlp) (opencog nlp lg-parse))
 
-(use-modules (srfi srfi-1))
-
-; Parse an example sentence
+; All of the examples below parse the same sentence. The ASCII-graphics
+; representation, as printed by link-parser, is this:
+;
+;      linkparser> This is a test.
+;      Found 8 linkages (8 had no P.P. violations)
+;         Linkage 1, cost vector = (UNUSED=0 DIS= 0.00 LEN=6)
+;
+;          +-------------Xp------------+
+;          +----->WV----->+---Osm--+   |
+;          +-->Wd---+-Ss*b+  +Ds**c+   |
+;          |        |     |  |     |   |
+;      LEFT-WALL this.p is.v a  test.n .
+;
+;      Press RETURN for the next linkage.
+;
+; This diagram should be compared to the outputs given below.
+;
+; -----------------------------------------------------------------
+; Parse an example sentence, returning the bonds (links) between words.
+;
 (cog-execute!
-	(LgParseMinimal    ; There is also a "full" parse, demoed below.
+	(LgParseBonds        ; Parse, but return only the links (bonds).
 		(PhraseNode "this is a test.")   ; The example sentence
 		(LgDictNode "en")  ; The dictionary to use - English in this case.
 		(NumberNode 1)))   ; The number of parses to perform.
 
-; The above will return an identifier - an anchor point - from which
-; the entire parse can be traced.  It will return something like
-; (SentenceNode "sentence@0c84adfa-babd-4b71-9d3a-51dfb3352e1e")
+; The bonds (links) can be read off from the ASCII-graphics chart above.
+; In Atomese, the Bonds include these:
+;
+;      (Edge
+;        (Bond "Ss*b")      ; The subject link
+;        (List
+;          (Word "this")
+;          (Word "is")))
+;      (Edge
+;        (Bond "Osm")       ; The object link
+;        (List
+;          (Word "is")
+;          (Word "test")))
+;      (Edge
+;        (Bond "Ds**c")     ; The determiner link
+;        (List
+;          (Word "a")
+;          (Word "test")))
+;
 
-; To see the parse in it's full glory, it's easiest to just print
-; the entire contents of the AtomSpace.
-(cog-prt-atomspace)
-
-; Documentation for how the parse is represented in Atomese can
-; be found in the wiki:
-;     https://wiki.opencog.org/w/Sentence_representation
-; and the node itself is documented at
-;     https://wiki.opencog.org/w/LgParseLink
-
-; ---------------------
-; Some examples of crawling over the parse graph.
-
-; First, put the sentence node where we can get at it easily.
-; (define sent (SentenceNode "sentence@0c84adfa-babd-4b71-9d3a-51dfb3352e1e"))
-
-; Get all of the parses associated with this sentence.
-(define (get-parses SENT)
-	(cog-execute! (Meet (Present (Parse (Variable "?parse") SENT)))))
-
-; Just print all of them (there should be only one, since we asked
-; for only one.)
-(get-parses sent)
-
-; ---------------------
-; Give a short name to the first parse.
-(define pars (first (cog-value->list (get-parses sent))))
-
-; Get all the word instances in the parse.
-(define (get-word-instances PARS)
-	(cog-execute! (Meet (Present (WordInstance (Variable "?wrd") PARS)))))
-
-(get-word-instances pars)
-
-; ---------------------
-; A word may occur two or more times in a sentence, and thus, the word
-; instance is a label indicating which word it is. The raw words can be
-; gotten like so:
-
-(define (get-words PARS)
-	(define qry
-		(Query
-			(VariableList (Variable "?winst") (Variable "?wrd"))
-			(Present
-				(WordInstance (Variable "?winst") PARS)
-				(Reference (Variable "?winst") (Variable "?wrd")))
-			(Variable "?wrd")))
-
-	(cog-execute! qry))
-
-(get-words pars)
-
-; ---------------------
-; The above is listed in arbitrary order. The below converts the
-; Atomese graph holding the word sequence into a collection of
-; scheme pairs.  This is nothing other than a format change:
-; it's still the same graph, but represented in Scheme, rather
-; than Atomese.
-
-(define (get-word-seq PARS)
-	(define qry
-		(Query
-			(VariableList
-				(Variable "?winst")
-				(Variable "?wrd")
-				(Variable "?wseq"))
-			(Present
-				(WordInstance (Variable "?winst") PARS)
-				(WordSequence (Variable "?winst") (Variable "?wseq"))
-				(Reference (Variable "?winst") (Variable "?wrd")))
-			(List (Variable "?wseq") (Variable "?wrd"))))
-
-	; Run the query. This returns a QueueValue.
-	(define qwords (cog-execute! qry))
-
-	; Convert the QueueValue to a scheme list.
-	(define wds (cog-value->list qwords))
-
-	; Convert the list of Atoms to scheme pairs.
-	(map
-		(lambda (APAIR)
-			(cons
-				(cog-name (cog-value-ref APAIR 0))
-				(cog-name (cog-value-ref APAIR 1))))
-		wds)
-)
-
-(get-word-seq pars)
-
-; ---------------------
-; Last but not least, get all of the linkages in the parse.
-
-(define (get-links PARS)
-	(define qry
-		(Query
-			(VariableList
-				(TypedVariable (Variable "?winst") (Type 'WordInstanceNode))
-				(TypedVariable (Variable "?wi2") (Type 'WordInstanceNode))
-				(TypedVariable (Variable "?lnk") (Type 'LgLinkNode)))
-			(Present
-				(WordInstance (Variable "?winst") PARS)
-				(Evaluation
-					(Variable "?lnk")
-					(List (Variable "?winst") (Variable "?wi2"))))
-
-			; Just echo the evaluation link.
-			(Evaluation
-					(Variable "?lnk")
-					(List (Variable "?winst") (Variable "?wi2")))))
-
-	(cog-execute! qry))
-
-(get-links pars)
-
-; ---------------------
-; The LgParseMinimal returns just enough information to reconstruct
-; the parse. In some cases, it is useful to know the disjuncts
-; that appeared in the parse, or the explicit linkages of connectors.
-; For this, use `LGParse` instead of `LgParseMinimal`.  Minimal is
-; nice, in that it does not clutter up the AtomSpace with the disjuncts,
-; if they are not wanted.
+; -----------------------------------------------------------------
+; Same as above, but return the disjuncts that were selected for
+; the parse.
+;
 (cog-execute!
-	(LgParse
-		(PhraseNode "What a deal!")
+	(LgParseDisjuncts
+		(PhraseNode "this is a test.")
 		(LgDictNode "en")
 		(NumberNode 1)))
 
-(cog-prt-atomspace)
-
-; Look for disjuncts, for example, you should see something like
+; One of the disjuncts will look like this:
 ;
-;    (LgWordCset
-;      (WordInstanceNode "What@ec45f2db-a013-47c9-bde6-39b043d4a54a")
+;    (LgDisjunct
+;      (WordNode "this")
 ;      (LgAnd
 ;        (LgConnector
-;          (LgConnNode "Wn")
+;          (LgConnNode "Wd")
 ;          (LgConnDirNode "-"))
 ;        (LgConnector
-;          (LgConnNode "O")
+;          (LgConnNode "Ss*b")
 ;          (LgConnDirNode "+"))))
 ;
-; which says that the word `What` had the disjunct `Wn- & O+` on it.
+; which says that the word `this` had the disjunct `Wd- & Ss*b+` on it.
 ;
-; Similarly, the words `What` and `deal` were connected with an `Os`
-; link, which was obtained by joining the `O+` connector to `Os-`:
-;
-;    (LgLinkInstanceLink
-;      (LgLinkInstanceNode "Os@sentence@5e069301-51de-484e-92ed-e8533de7ba40_parse_0-link-2")
-;      (LgConnector
-;        (LgConnNode "O")
-;        (LgConnDirNode "+"))
-;      (LgConnector
-;        (LgConnNode "Os")
-;        (LgConnDirNode "-")))
-;
-; The LinkInstance is an instance of a specific link:
-;
-;    (ReferenceLink
-;      (LgLinkInstanceNode "Os@sentence@5e069301-51de-484e-92ed-e8533de7ba40_parse_0-link-2")
-;      (LgLinkNode "Os"))
-;
-; The LinkInstance joints two specific words together:
-;
-;    (EvaluationLink
-;      (LgLinkInstanceNode "Os@sentence@5e069301-51de-484e-92ed-e8533de7ba40_parse_0-link-2")
-;      (ListLink
-;        (WordInstanceNode "What@ec45f2db-a013-47c9-bde6-39b043d4a54a")
-;        (WordInstanceNode "deal@2628c310-bff2-4ec4-826d-f1d6b49d657f")))
-;
-; Note that the above is very much like the earlier form:
-;
-;    (EvaluationLink
-;      (LgLinkNode "Os")
-;      (ListLink
-;        (WordInstanceNode "What@ec45f2db-a013-47c9-bde6-39b043d4a54a")
-;        (WordInstanceNode "deal@2628c310-bff2-4ec4-826d-f1d6b49d657f")))
-;
-; except that the link instance is unambiguously identified.
+; This format does NOT include any info about which connectors connected
+; to which other connectors. In principle, this can be deduced by the fact
+; that LG parses are always planar, and so there are no link-crossings.
+; Alternately, LgParseBinds returns this info directly.
 
+; -----------------------------------------------------------------
+; Same as above, but return the disjuncts, represented as Sections.
+;
+(cog-execute!
+	(LgParseSections
+		(PhraseNode "this is a test.")
+		(LgDictNode "en")
+		(NumberNode 1)))
+
+; One of the sections will look like this:
+;
+;      (Section
+;        (Word "this")
+;        (ConnectorSeq
+;          (Connector
+;            (Word "###LEFT-WALL###")
+;            (Sex "-"))
+;          (Connector
+;            (Word "is")
+;            (Sex "+"))))
+;
+; Comparing this to the disjunct representation, the same connectivity
+; pattern is reported, except that each LgConnector is replaced by the
+; target link word.
+;
+; The type of the connection is not reported. The type of the connection
+; can be thought of as a classification: the word-pair (this,is) belongs
+; to the bond class "Ss*b". It is an instance in that class. The
+; classification is not unique; the word pair (this,is) may obtain other
+; bond-class assignments, depending on the parse of the sentence as a
+; whole.
+;
 ; ---------------------
 ; That's all, folks!
