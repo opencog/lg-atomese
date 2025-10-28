@@ -51,17 +51,6 @@ an AtomSpace is specified, but the `StorageNode` is not, the parser
 will use the AtomSpace contents only; the entire dictionary must
 be present in the AtomSpace.
 
-The format is documented at https://
-
-LgParseMinimal
---------------
-https://wiki.opencog.org/w/LgParseMinimal
-
-This performs the same parse as `LgParseLink`; however, it does not
-insert the resulting disjuncts into the AtomSpace. As the disjuncts
-are quite verbose, this significantly reduces the number of atoms
-placed in the AtomSpace.
-
 LgParseDisjuncts
 ----------------
 https://wiki.opencog.org/w/LgParseDisjuncts
@@ -83,7 +72,7 @@ Example
 Here's a working example:
 ```
 (use-modules (opencog) (opencog nlp) (opencog nlp lg-parse) (opencog exec))
-(cog-execute! (LgParseLink  (PhraseNode "this is a test.")
+(cog-execute! (LgParseBonds  (PhraseNode "this is a test.")
     (LgDictNode "en") (NumberNode 1)))
 (cog-prt-atomspace)
 ```
@@ -97,31 +86,3 @@ This is a minimalist API to the Link Grammar parser, attempting to
 live off the default options that Link Grammar provides.  At this time,
 it is not envisioned that there will ever be any need to expand beyond
 this minimalist API.
-
-RelEx Compatibility
--------------------
-The LgParse and LgParseMinimal formats are backwards-compatible with
-the RelEx system. The other formats are not; they're more modern and
-easier to use.
-
-Since the provided format is compatible with the RelEx parse server,
-this means that there are two ways of getting parsed text into the
-AtomSpace: using these two links, or using the RelEx server.  There are
-competing pros and cons of doing it each way:
-
-* The RelEx server is obsolete. It still works, but there no support
-  for it any more. No bug-fixes, no active development.
-
-* The RelEx server is a network server, and can be run on any
-  network-connected machine.
-
-* If you want to have a networked LG parser server, you can do this
-  with the `CogStorageNode`. See the examples directory.
-
-* The RelEx server generates scheme strings, which must be parsed by
-  the scheme interpreter in OpenCog. This adds a lot of overhead, and
-  can be slow. Guile memory management gets unhappy, when fed too many
-  long strings.
-
-* The RelEx server supports a much larger set of LG options, and can
-  thus be made to do unusual things, should you need unusual things.
