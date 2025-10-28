@@ -12,22 +12,19 @@
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog nlp) (opencog nlp lg-dict))
 
-; Dictionary lookup just requires the word, and the dictionary to
-; look at.
+; Look up a word in a dictionary. Both the word and the dictionary
+; must be supplied. By default, the dictionary used is the standard
+; LG text dictionary, installed in the /usr/local directory.
+; An AtomSpace can also be used to provide a dictionary; see the
+; `cross-space.scm` demo.
 (cog-execute! (LgDictEntry (Word "yikes") (LgDictNode "en")))
-(cog-incoming-by-type (Word "yikes") 'LgDisjunct)
 
-; The `lg-dict-entry` utility is just a fancy wrapper on the above
-; two lines of code. All that it does is to avoid a second lookup
-; if a lookup has already been done before.
-
-; Documentation for this Atom can be found at
+; Documentation can be found at
 ;    https://wiki.opencog.org/w/LgDictNode
 
 ; -----------
 ; Here's an example of a lookup in the Russian dictionary:
 (cog-execute! (LgDictEntry (Word "доктор") (LgDictNode "ru")))
-(cog-incoming-by-type (Word "доктор") 'LgDisjunct)
 
 ; Note that Russian has a complex morphology, and this is reflected
 ; in the much larger dictionary entries.
@@ -40,14 +37,13 @@
 (cog-execute! (LgHaveDictEntry (Word "доктор") (LgDictNode "ru")))
 (cog-execute! (LgHaveDictEntry (Word "дasdf") (LgDictNode "ru")))
 
-; Note that `cog-evaluate!` is used here, not `cog-execute!`
-
-; Other utility functions include:
+; Two deprecated utility functions are shown below. Thyese should not
+; be used in new code. It these are really actually needed, then a new
+; Link type should be created for each, such that executing that Link
+; performs the functions below.
 ;
 ; lg-conn-type-match?
 ; lg-conn-linkable?
-; lg-conn-get-type
-; lg-conn-get-dir
 ;
 ; You can get documentation for each with the ,d or ,describe command
 ; at the guile prompt. For example:
