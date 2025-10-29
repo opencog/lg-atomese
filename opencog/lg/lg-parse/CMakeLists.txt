@@ -24,3 +24,8 @@ INSTALL (TARGETS lg-parse
 	EXPORT LGAtomeseTargets
 	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
+
+INSTALL (FILES
+	LGParseLink.h
+	DESTINATION "include/opencog/lg/lg-parse"
+)
