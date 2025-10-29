@@ -14,7 +14,7 @@ INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
 ADD_LIBRARY (nlp-types SHARED
 	atom_types.h
-	NLPTypes.cc
+	LGTypes.cc
 )
 
 TARGET_LINK_LIBRARIES(nlp-types
