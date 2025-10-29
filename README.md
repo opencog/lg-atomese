@@ -24,8 +24,8 @@ The original natural language dictionaries were created by hand.
 Current versions of Link Grammar can pull dictionary entries out
 of the AtomSpace, thus allowing the dictionary to be maintained
 dynamically, using learning algorithms of any desired sort.
-In particular, learning and parsing can be interleaved, sentance
-by sentance, instead of considned to batch processing.
+In particular, learning and parsing can be interleaved, sentence
+by sentence, instead of considned to batch processing.
 
 
 Status

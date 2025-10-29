@@ -4,7 +4,7 @@
 ; The client side of a client-server implementation for Link Grammar
 ; parsing. This uses the CogStorageNode to open a network connection
 ; to the parse server. All of the parsing is done on the server; the
-; results of the parse are shiped over the network to the local host.
+; results of the parse are shipped over the network to the local host.
 ;
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog persist))
@@ -40,7 +40,7 @@
 
 ; ----------------------------------------------------
 ; How about dict entries?
-; The API is a bit diffferent here, than above.
+; The API is a bit different here, than above.
 
 (define lookup (LgDictEntry (Word "yikes") (LgDictNode "en")))
 (fetch-query lookup anchor)

@@ -1,5 +1,5 @@
 ;
-; parse.scm -- Demo showing the different kinds of availble parse info.
+; parse.scm -- Demo showing the different kinds of available parse info.
 ;
 ; The Link Grammar parser will parse natural language sentences,
 ; returning a dependency graph of how the words are connected.

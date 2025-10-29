@@ -184,7 +184,7 @@ ValuePtr LGParseLink::execute(AtomSpace* as, bool silent)
 {
 	// Executable links are a subset of those that can be declared.
 	// Declarations can include VariableNodes & etc. but for execution,
-	// evrything must be concrete. So check the args here; and not
+	// everything must be concrete. So check the args here; and not
 	// in the ctor.
 	if (LG_DICT_NODE != _outgoing[1]->get_type())
 		throw InvalidParamException(TRACE_INFO,
