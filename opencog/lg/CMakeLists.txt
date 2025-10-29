@@ -1,5 +1,5 @@
 
-# Build C++ code in assorted NLP subdirectories
+# Build C++ code in assorted LG subdirectories
 
 ADD_SUBDIRECTORY (types)
 

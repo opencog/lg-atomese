@@ -69,8 +69,8 @@ LGDictSCM::LGDictSCM()
  */
 void* LGDictSCM::init_in_guile(void* self)
 {
-	scm_c_define_module("opencog nlp lg-dict", init_in_module, self);
-	scm_c_use_module("opencog nlp lg-dict");
+	scm_c_define_module("opencog lg dict", init_in_module, self);
+	scm_c_use_module("opencog lg dict");
 	return NULL;
 }
 
@@ -120,9 +120,8 @@ bool LGDictSCM::do_lg_conn_linkable(Handle h1, Handle h2)
 	return lg_conn_linkable(h1, h2);
 }
 
-extern "C" {
-void opencog_nlp_lgdict_init(void)
+// Global initialization via constructor
+static __attribute__ ((constructor)) void init(void)
 {
 	static LGDictSCM lgdict;
 }
-};

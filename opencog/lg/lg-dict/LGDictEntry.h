@@ -27,7 +27,7 @@
 #include <link-grammar/link-includes.h>
 
 #include <opencog/atoms/core/FunctionLink.h>
-#include <opencog/nlp/types/atom_types.h>
+#include <opencog/lg/types/atom_types.h>
 
 namespace opencog
 {

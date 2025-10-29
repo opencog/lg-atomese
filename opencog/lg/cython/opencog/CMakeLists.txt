@@ -21,32 +21,32 @@ SET(CYTHON_FLAGS "-3" "-f" "-Wextra" # "-Werror"
 # Use this as a guide:
 # https://github.com/OpenKinect/libfreenect/blob/master/wrappers/python/CMakeLists.txt
 
-##################### NLP Types ##################
+##################### LG Types ##################
 
-CYTHON_ADD_MODULE_PYX(nlp_types
-	"nlp_types.pyx"
+CYTHON_ADD_MODULE_PYX(lg_types
+	"lg_types.pyx"
 )
 
-list(APPEND ADDITIONAL_MAKE_CLEAN_FILES "nlp_types.cpp")
+list(APPEND ADDITIONAL_MAKE_CLEAN_FILES "lg_types.cpp")
 
-# opencog.nlp_types Python bindings
+# opencog.lg_types Python bindings
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
-ADD_LIBRARY(nlp_types_cython SHARED
-	nlp_types.cpp
+ADD_LIBRARY(lg_types_cython SHARED
+	lg_types.cpp
 )
 
-ADD_DEPENDENCIES(nlp_types_cython nlp-types)
+ADD_DEPENDENCIES(lg_types_cython lg-types)
 
-TARGET_LINK_LIBRARIES(nlp_types_cython
-	nlp-types
+TARGET_LINK_LIBRARIES(lg_types_cython
+	lg-types
 	${ATOMSPACE_LIBRARIES}
 	${Python3_LIBRARIES}
 )
 
-SET_TARGET_PROPERTIES(nlp_types_cython PROPERTIES
+SET_TARGET_PROPERTIES(lg_types_cython PROPERTIES
 	PREFIX ""
-	OUTPUT_NAME nlp_types)
+	OUTPUT_NAME lg_types)
 
-INSTALL (TARGETS nlp_types_cython
+INSTALL (TARGETS lg_types_cython
 	DESTINATION "${PYTHON_DEST}")

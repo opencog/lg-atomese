@@ -9,9 +9,9 @@
 (use-modules (opencog) (opencog exec))
 (use-modules (opencog persist))
 (use-modules (opencog persist-cog))
-(use-modules (opencog nlp))
-(use-modules (opencog nlp lg-dict))
-(use-modules (opencog nlp lg-parse))
+(use-modules (opencog lg))
+
+
 
 ; Define a StorageNode that will connect to the remote server.
 (define csn (CogStorageNode "cog://localhost:17003"))

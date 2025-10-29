@@ -1,5 +1,5 @@
 /*
- * opencog/nlp/lg-dict/LGDictNode.h
+ * opencog/lg/lg-dict/LGDictNode.h
  *
  * Copyright (C) 2017 Linas Vepstas
  * All Rights Reserved

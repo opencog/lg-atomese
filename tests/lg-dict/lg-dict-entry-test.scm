@@ -6,8 +6,8 @@
 (use-modules (srfi srfi-64))
 (use-modules (opencog))
 (use-modules (opencog exec))
-(use-modules (opencog nlp))
-(use-modules (opencog nlp lg-dict))
+(use-modules (opencog lg))
+
 (use-modules (opencog test-runner))
 
 (opencog-test-runner)

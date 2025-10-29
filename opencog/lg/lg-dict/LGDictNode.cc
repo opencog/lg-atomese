@@ -1,5 +1,5 @@
 /*
- * opencog/nlp/lg-dict/LGDictNode.cc
+ * opencog/lg/lg-dict/LGDictNode.cc
  *
  * Copyright (C) 2017 Linas Vepstas
  * All Rights Reserved
@@ -25,7 +25,7 @@
 #include <link-grammar/link-includes.h>
 #include <opencog/atoms/atom_types/NameServer.h>
 #include <opencog/util/Logger.h>
-#include <opencog/nlp/types/atom_types.h>
+#include <opencog/lg/types/atom_types.h>
 
 #include "LGDictNode.h"
 
@@ -127,8 +127,3 @@ static __attribute__ ((constructor)) void init(void)
 }
 
 // ------------------------------------------------------
-
-/* This allows guile to load this shared library */
-extern "C" {
-	void opencog_nlp_lgparse_init(void) {}
-};
