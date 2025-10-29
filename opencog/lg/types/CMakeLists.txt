@@ -30,11 +30,13 @@ INSTALL (TARGETS lg-types
 )
 
 # Create a symlink so the library can also be found as libnlp-types.so
-# This is needed temporarily, for backward compatibility with link-grammar
-# which currently expects libnlp-types.so in it's configure.ac
-INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
-	liblg-types.so \
-	\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/lib${LIB_DIR_SUFFIX}/opencog/libnlp-types.so)")
+# This is only needed for link-grammar versions 5.0 through 5.12
+# Link-grammar 5.13+ will use liblg-types.so directly
+IF (LG_VERSION_MAJOR EQUAL 5 AND LG_VERSION_MINOR LESS 13)
+	INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+		liblg-types.so \
+		\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/lib${LIB_DIR_SUFFIX}/opencog/libnlp-types.so)")
+ENDIF ()
 
 INSTALL (FILES
 	${CMAKE_CURRENT_BINARY_DIR}/atom_types.h
