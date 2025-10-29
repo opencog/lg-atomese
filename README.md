@@ -18,6 +18,15 @@ graphs. That is, it is a kind of "graph parser". Exactly where the
 theoretical limits are is unclear; its usage in a general setting
 continues to be explored, as of 2025.
 
+Traditional LG worked with language description files, aka
+"dictionaries" providing the "lexis" from which parsing is done.
+The original natural language dictionaries were created by hand.
+Current versions of Link Grammar can pull dictionary entries out
+of the AtomSpace, thus allowing the dictionary to be maintained
+dynamically, using learning algorithms of any desired sort.
+In particular, learning and parsing can be interleaved, sentance
+by sentance, instead of considned to batch processing.
+
 
 Status
 ------
@@ -65,10 +74,11 @@ The following packages must first be built and installed.
 * https://opencog.github.io/link-grammar-website/
 * Git repo:  https://github.com/opencog/link-grammar
 * This uses the autoconf toolset. When building from the tarball,
-  say `mkdir build; cd build; ..configure; make -j; sudoe make install`
+  say `mkdir build; cd build; ..configure; make -j; sudo make install`
   When building from the git repo, you must first say
   `./autogen.sh --no-configure`. There are various prereqs to install,
-  first.
+  first, including autotools, autotools-archive, libpcre-dev, aspell,
+  and libeditline-dev
 
 
 Building LG-Atomese
