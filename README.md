@@ -43,26 +43,32 @@ Prerequisites
 The following packages must first be built and installed.
 
 ###### cogutil
-> Common OpenCog C++ utilities
-> https://github.com/opencog/cogutil
-> It uses exactly the same build procedure as this package. Be sure
+* Common OpenCog C++ utilities
+* https://github.com/opencog/cogutil
+* It uses exactly the same build procedure as this package. Be sure
   to `sudo make install` at the end.
 
 ###### atomspace
-> OpenCog Atomspace hypergraph database
-> https://github.com/opencog/atomspace
-> It uses exactly the same build procedure as this package. Be sure
+* OpenCog Atomspace hypergraph database
+* https://github.com/opencog/atomspace
+* It uses exactly the same build procedure as this package. Be sure
   to `sudo make install` at the end.
 
 ###### atomspace-storage
-> OpenCog Atomspace Storage subsystem
-> https://github.com/opencog/atomspace-storage
-> It uses exactly the same build procedure as this package. Be sure
+* OpenCog Atomspace Storage subsystem
+* https://github.com/opencog/atomspace-storage
+* It uses exactly the same build procedure as this package. Be sure
   to `sudo make install` at the end.
 
 ###### Link Grammar
-> Natural Language Parser for English, Russian, other languages.
-> https://opencog.github.io/link-grammar-website/
+* Natural Language Parser for English, Russian, other languages.
+* https://opencog.github.io/link-grammar-website/
+* Git repo:  https://github.com/opencog/link-grammar
+* This uses the autoconf toolset. When building from the tarball,
+  say `mkdir build; cd build; ..configure; make -j; sudoe make install`
+  When building from the git repo, you must first say
+  `./autogen.sh --no-configure`. There are various prereqs to install,
+  first.
 
 
 Building LG-Atomese
