@@ -3,20 +3,40 @@ Atomese API for Link Grammar
 
 [![CircleCI](https://circleci.com/gh/opencog/lg-atomese.svg?style=svg)](https://circleci.com/gh/opencog/lg-atomese)
 
-This repo provides an Atomese API for
+This repo provides an
+[Atomese API](https://wiki.opencog.org/w/Atomese)
+for
 [Link Grammar](https://github.com/opencog/link-grammar), allowing Link
 Grammar dictionaries and parse results to be accessed from the
 AtomSpace.
 
+Link Grammar has its roots in Natural Language Processing, but appears
+to be more general, and seems capable of assigning structural
+relationships to items in arbitrary configurations. That is, not just
+words in sentences, but linear streams, and even non-planar relationship
+graphs. That is, it is a kind of "graph parser". Exactly where the
+theoretical limits are is unclear; its usage in a general setting
+continues to be explored, as of 2025.
+
+
 Status
 ------
-### Version 1.0
+### Version 2.0
 The code here has been used in production for many years.
+Version 2.0 removes several older formats that were provided
+in version 1.0. See the documentation for details:
+
+* [LgParseLink](https://wiki.opencog.org/w/LgParseLink)
+* [LgParseBonds](https://wiki.opencog.org/w/LgParseBonds)
+* [LgParseDisjuncts](https://wiki.opencog.org/w/LgParseDisjuncts)
+* [LgParseSections](https://wiki.opencog.org/w/LgParseSections)
+* [LgDictEntry](https://wiki.opencog.org/w/LgDictEntry)
+* [LgConnExpand](https://wiki.opencog.org/w/LgConnExpand)
 
 However, there are still some things that would be nice to have.
 This includes:
-* Placing costs on the parse results.
-* Reporting costs in dictionary lookups.
+* Placing costs (aka entrpy) on the parse results.
+* Reporting costs (aka entropy) in dictionary lookups.
 
 Prerequisites
 -------------
@@ -29,14 +49,20 @@ The following packages must first be built and installed.
   to `sudo make install` at the end.
 
 ###### atomspace
-> OpenCog Atomspace database and reasoning engine
+> OpenCog Atomspace hypergraph database
 > https://github.com/opencog/atomspace
+> It uses exactly the same build procedure as this package. Be sure
+  to `sudo make install` at the end.
+
+###### atomspace-storage
+> OpenCog Atomspace Storage subsystem
+> https://github.com/opencog/atomspace-storage
 > It uses exactly the same build procedure as this package. Be sure
   to `sudo make install` at the end.
 
 ###### Link Grammar
 > Natural Language Parser for English, Russian, other languages.
-> https://www.abisource.com/projects/link-grammar/
+> https://opencog.github.io/link-grammar-website/
 
 
 Building LG-Atomese
@@ -59,12 +85,16 @@ Unit tests
 To build and run the unit tests, from the `./build` directory enter
 (after building opencog as above):
 ```
-    make test
+    make check
 ```
-
-At this time, there are no unit tests.
 
 Examples
 --------
 See the [`examples`](./examples) directory for examples of how to use
-this Atomese API to Link Grammar.
+this Atomese API to Link Grammar. There are three basic functions
+provided:
+* Parsing sentences to get links (bonds), disjuncts and sections.
+* Looking up words in a dictionary to get disjunt choices.
+* Analyzing connectors, expanding them into types and subtypes.
+
+---
