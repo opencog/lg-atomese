@@ -12,6 +12,8 @@ ADD_CUSTOM_TARGET(lg_atom_types DEPENDS atom_types.h)
 # The atom_types.h file is written to the build directory
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
+# This library MUST be called libnlp-types.so for now, because the
+# link-grammar configure.ac expects to link to it, under that name.
 ADD_LIBRARY (nlp-types SHARED
 	atom_types.h
 	LGTypes.cc
