@@ -13,7 +13,7 @@ ADD_DEPENDENCIES (lg-parse lg_atom_types)
 
 TARGET_LINK_LIBRARIES (lg-parse
 	lg-dict-entry
-	lg-types
+	nlp-types
 	${ATOMSPACE_STORAGE_LIBRARIES}
 	${ATOMSPACE_LIBRARIES}
 	${LINK_GRAMMAR_LIBRARY}

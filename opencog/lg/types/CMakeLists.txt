@@ -12,22 +12,19 @@ ADD_CUSTOM_TARGET(lg_atom_types DEPENDS atom_types.h)
 # The atom_types.h file is written to the build directory
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
-ADD_LIBRARY (lg-types SHARED
+ADD_LIBRARY (nlp-types SHARED
 	atom_types.h
 	NLPTypes.cc
 )
 
-# Don't initialize base types - they're already loaded by (opencog) module
-TARGET_COMPILE_DEFINITIONS(lg-types PRIVATE LOAD_ME_FIRST)
-
-TARGET_LINK_LIBRARIES(lg-types
+TARGET_LINK_LIBRARIES(nlp-types
 	${ATOMSPACE_atomtypes_LIBRARY}
 )
 
 # Without this, parallel make will race and crap up the generated files.
-ADD_DEPENDENCIES(lg-types lg_atom_types)
+ADD_DEPENDENCIES(nlp-types lg_atom_types)
 
-INSTALL (TARGETS lg-types
+INSTALL (TARGETS nlp-types
 	EXPORT LGAtomeseTargets
 	LIBRARY DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
@@ -43,4 +40,4 @@ ADD_GUILE_MODULE (FILES
 	DEPENDS lg_atom_types
 )
 
-ADD_GUILE_EXTENSION(SCM_CONFIG lg-types "opencog-ext-path-lg-types")
+ADD_GUILE_EXTENSION(SCM_CONFIG nlp-types "opencog-ext-path-lg-types")

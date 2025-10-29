@@ -10,7 +10,7 @@ ADD_LIBRARY (lg-conn SHARED
 ADD_DEPENDENCIES (lg-conn lg_atom_types)
 
 TARGET_LINK_LIBRARIES (lg-conn
-	lg-types
+	nlp-types
 	${ATOMSPACE_smob_LIBRARY}
 	${ATOMSPACE_LIBRARIES}
 )
