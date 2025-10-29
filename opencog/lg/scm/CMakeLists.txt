@@ -5,7 +5,7 @@ ADD_LIBRARY (lg SHARED
 
 TARGET_LINK_LIBRARIES (lg
 	${NO_AS_NEEDED}
-	nlp-types
+	lg-types
 	lg-conn
 	lg-dict
 	lg-parse

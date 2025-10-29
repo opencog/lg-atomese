@@ -12,24 +12,29 @@ ADD_CUSTOM_TARGET(lg_atom_types DEPENDS atom_types.h)
 # The atom_types.h file is written to the build directory
 INCLUDE_DIRECTORIES(${CMAKE_BINARY_DIR})
 
-# This library MUST be called libnlp-types.so for now, because the
-# link-grammar configure.ac expects to link to it, under that name.
-ADD_LIBRARY (nlp-types SHARED
+ADD_LIBRARY (lg-types SHARED
 	atom_types.h
 	LGTypes.cc
 )
 
-TARGET_LINK_LIBRARIES(nlp-types
+TARGET_LINK_LIBRARIES(lg-types
 	${ATOMSPACE_atomtypes_LIBRARY}
 )
 
 # Without this, parallel make will race and crap up the generated files.
-ADD_DEPENDENCIES(nlp-types lg_atom_types)
+ADD_DEPENDENCIES(lg-types lg_atom_types)
 
-INSTALL (TARGETS nlp-types
+INSTALL (TARGETS lg-types
 	EXPORT LGAtomeseTargets
 	LIBRARY DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
+
+# Create a symlink so the library can also be found as libnlp-types.so
+# This is needed temporarily, for backward compatibility with link-grammar
+# which currently expects libnlp-types.so in it's configure.ac
+INSTALL(CODE "execute_process(COMMAND ${CMAKE_COMMAND} -E create_symlink \
+	liblg-types.so \
+	\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/lib${LIB_DIR_SUFFIX}/opencog/libnlp-types.so)")
 
 INSTALL (FILES
 	${CMAKE_CURRENT_BINARY_DIR}/atom_types.h
@@ -42,4 +47,4 @@ ADD_GUILE_MODULE (FILES
 	DEPENDS lg_atom_types
 )
 
-ADD_GUILE_EXTENSION(SCM_CONFIG nlp-types "opencog-ext-path-lg-types")
+ADD_GUILE_EXTENSION(SCM_CONFIG lg-types "opencog-ext-path-lg-types")

@@ -19,7 +19,7 @@ ADD_LIBRARY (lg-dict SHARED
 ADD_DEPENDENCIES (lg-dict-entry lg_atom_types)
 
 TARGET_LINK_LIBRARIES (lg-dict-entry
-	nlp-types
+	lg-types
 	${ATOMSPACE_smob_LIBRARY}
 	${LINK_GRAMMAR_LIBRARY}
 )

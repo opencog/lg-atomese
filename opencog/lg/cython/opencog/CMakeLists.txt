@@ -36,10 +36,10 @@ ADD_LIBRARY(lg_types_cython SHARED
 	lg_types.cpp
 )
 
-ADD_DEPENDENCIES(lg_types_cython nlp-types)
+ADD_DEPENDENCIES(lg_types_cython lg-types)
 
 TARGET_LINK_LIBRARIES(lg_types_cython
-	nlp-types
+	lg-types
 	${ATOMSPACE_LIBRARIES}
 	${Python3_LIBRARIES}
 )
