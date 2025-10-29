@@ -24,5 +24,3 @@ INSTALL (TARGETS lg-parse
 	EXPORT LGAtomeseTargets
 	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
-
-ADD_GUILE_EXTENSION(SCM_CONFIG lg-parse "opencog-ext-path-lg-parse")

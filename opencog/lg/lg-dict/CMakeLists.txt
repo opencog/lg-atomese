@@ -38,8 +38,6 @@ INSTALL (TARGETS lg-dict
 	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
 
-ADD_GUILE_EXTENSION(SCM_CONFIG lg-dict "opencog-ext-path-lg-dict")
-
 INSTALL (FILES
 	LGDictEntry.h
 	LGDictNode.h

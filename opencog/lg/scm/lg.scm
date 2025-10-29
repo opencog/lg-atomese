@@ -5,14 +5,9 @@
 	#:use-module (opencog lg-config)
 )
 
-; Load the C library types
-(load-extension (string-append opencog-ext-path-lg-types "liblg-types") "lg_types_init")
+; Load the unified LG library - this loads all subsystems
+(load-extension (string-append opencog-ext-path-lg "liblg") "opencog_lg_init")
 (include-from-path "opencog/lg/types/lg_types.scm")
-
-; Load the three LG subsystem libraries - they register into this module
-(load-extension (string-append opencog-ext-path-lg-conn "liblg-conn") "opencog_nlp_lgconn_init")
-(load-extension (string-append opencog-ext-path-lg-dict "liblg-dict") "opencog_nlp_lgdict_init")
-(load-extension (string-append opencog-ext-path-lg-parse "liblg-parse") "opencog_nlp_lgparse_init")
 
 ; Export functions from lg-dict
 (export lg-conn-type-match?)

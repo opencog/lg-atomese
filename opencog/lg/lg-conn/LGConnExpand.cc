@@ -171,7 +171,3 @@ ValuePtr LGConnExpand::execute(AtomSpace* as, bool silent)
 }
 
 DEFINE_LINK_FACTORY(LGConnExpand, LG_CONN_EXPAND)
-
-extern "C" {
-void opencog_nlp_lgconn_init(void) {}
-};

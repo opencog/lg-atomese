@@ -127,8 +127,3 @@ static __attribute__ ((constructor)) void init(void)
 }
 
 // ------------------------------------------------------
-
-/* This allows guile to load this shared library */
-extern "C" {
-	void opencog_nlp_lgparse_init(void) {}
-};

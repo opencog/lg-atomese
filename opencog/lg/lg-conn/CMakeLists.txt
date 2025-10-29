@@ -20,8 +20,6 @@ INSTALL (TARGETS lg-conn
 	DESTINATION "lib${LIB_DIR_SUFFIX}/opencog"
 )
 
-ADD_GUILE_EXTENSION(SCM_CONFIG lg-conn "opencog-ext-path-lg-conn")
-
 INSTALL (FILES
 	LGConnExpand.h
 	DESTINATION "include/opencog/lg/lg-conn"
