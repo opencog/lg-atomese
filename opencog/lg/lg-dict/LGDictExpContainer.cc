@@ -27,7 +27,7 @@
 
 #include <opencog/atoms/base/Link.h>
 #include <opencog/atoms/base/Node.h>
-#include <opencog/nlp/types/atom_types.h>
+#include <opencog/lg/types/atom_types.h>
 #include "LGDictExpContainer.h"
 
 using namespace opencog;

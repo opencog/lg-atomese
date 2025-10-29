@@ -1,16 +1,20 @@
-;
-; lg-dict.scm
-;
-; Link Grammar dictionary API
-;
-(define-module (opencog nlp lg-dict))
+(use-modules (opencog))
 
-(use-modules (srfi srfi-1) (opencog) (opencog lg-config) (opencog nlp) (opencog exec))
+(define-module (opencog lg)
+	#:use-module (opencog)
+	#:use-module (opencog lg-config)
+)
 
+; Load the C library types
+(load-extension (string-append opencog-ext-path-lg-types "liblg-types") "lg_types_init")
+(include-from-path "opencog/lg/types/lg_types.scm")
+
+; Load the three LG subsystem libraries - they register into this module
+(load-extension (string-append opencog-ext-path-lg-conn "liblg-conn") "opencog_nlp_lgconn_init")
 (load-extension (string-append opencog-ext-path-lg-dict "liblg-dict") "opencog_nlp_lgdict_init")
+(load-extension (string-append opencog-ext-path-lg-parse "liblg-parse") "opencog_nlp_lgparse_init")
 
-; ---------------------------------------------------------------------
-
+; Export functions from lg-dict
 (export lg-conn-type-match?)
 (set-procedure-property! lg-conn-type-match? 'documentation
 "
@@ -33,5 +37,3 @@
      This checks the connector strings for linkability, using the
      standard Link Grammar connector matching rules.
 ")
-
-; ---------------------------------------------------------------------

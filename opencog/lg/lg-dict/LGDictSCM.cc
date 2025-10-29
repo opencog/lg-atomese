@@ -69,8 +69,8 @@ LGDictSCM::LGDictSCM()
  */
 void* LGDictSCM::init_in_guile(void* self)
 {
-	scm_c_define_module("opencog nlp lg-dict", init_in_module, self);
-	scm_c_use_module("opencog nlp lg-dict");
+	scm_c_define_module("opencog lg dict", init_in_module, self);
+	scm_c_use_module("opencog lg dict");
 	return NULL;
 }
 

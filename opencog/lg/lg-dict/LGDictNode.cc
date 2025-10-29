@@ -25,7 +25,7 @@
 #include <link-grammar/link-includes.h>
 #include <opencog/atoms/atom_types/NameServer.h>
 #include <opencog/util/Logger.h>
-#include <opencog/nlp/types/atom_types.h>
+#include <opencog/lg/types/atom_types.h>
 
 #include "LGDictNode.h"
 
