@@ -10,27 +10,18 @@ lg-dict
 -------
 Import Link Grammar dictionary entries into the AtomSpace. Allows
 different dictionaries to be opened, and words to be looked up in them.
-A lookup loads all of the LG disjuncts for that word into the atomspace. 
 Implements the `LgDictEntry` and the `LgHaveDictEntry` atoms.
 
 lg-parse
 --------
-Parse sentences and place parse results into the AtomSpace. Implements
-the `LgParse`, `LgParseMinimal` and `LgParseDisjuncts` Atoms.
-
-A parsed sentence consists of zero or more parses. Each parse consists
-of a sequence of `WordInstanceNode`, together with a listing of the 
-LG Links connecting those words. The `LgParseMinimal` link does less
-work, by skipping the creation of the disjuncts. The `LgParseDisjuncts`
-link does less work by creating *only* the disjuncts, and none of the
-rest of the linkage info.
+Parse sentences and return them wrapped in a LinkValue. Implements
+the `LgParse`, `LgParseBonds`, `LgParseSections` and `LgParseDisjuncts`
+Atoms.
 
 scm
 ---
-The scm directory defines the `(opencog nlp)` guile module. It has this
-name (instead of `(opencog lg-atomese)`) in order to preserve backwards
-compatibility with older code. This module provides basic type
-definitions.
+The scm directory defines the `(opencog lg)` guile module.  This module
+provides basic type definitions.
 
 types
 -----
