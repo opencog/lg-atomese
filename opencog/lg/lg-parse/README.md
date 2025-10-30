@@ -45,6 +45,13 @@ an AtomSpace is specified, but the `StorageNode` is not, the parser
 will use the AtomSpace contents only; the entire dictionary must
 be present in the AtomSpace.
 
+LgParseBonds
+------------
+https://wiki.opencog.org/w/LgParseBonds
+
+This returns a LinkValue holding the different parses; each parse is a
+LinkValue for the links (bonds) in that parse.
+
 LgParseDisjuncts
 ----------------
 https://wiki.opencog.org/w/LgParseDisjuncts
@@ -62,10 +69,9 @@ Example
 -------
 Here's a working example:
 ```
-(use-modules (opencog) (opencog nlp) (opencog nlp lg-parse) (opencog exec))
+(use-modules (opencog) (opencog lg) (opencog exec))
 (cog-execute! (LgParseBonds  (PhraseNode "this is a test.")
     (LgDictNode "en") (NumberNode 1)))
-(cog-prt-atomspace)
 ```
 
 More examples can be found in the top-level
