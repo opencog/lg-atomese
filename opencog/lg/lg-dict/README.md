@@ -3,14 +3,14 @@
 Modules and functions for generating a LG dictionary entry of a word
 in the AtomSpace.
 
-## Scheme module `(opencog nlp lg-dict)`
+## Scheme module `(opencog lg)`
 
 Defines `LgDictNode`, `LgDictEntry` and `LgHaveDictEntry`.  These can
 be used to look up Link Grammar dictionary entries, and generate an
 Atomese expression for them, returning that expression.
 
 ```
-	(use-modules (opencog) (opencog nlp) (opencog nlp lg-dict))
+	(use-modules (opencog) (opencog lg))
 	(use-modules (opencog exec))
 	(cog-execute!
 		(LgDictEntry
@@ -51,7 +51,7 @@ The connector ordering is kept intact. Connectors and their meaning and
 usage are described in the [Link Grammar documentation](http://www.abisource.com/projects/link-grammar/dict/introduction.html),
 section 1.2.1.
 
-For more information on the Node & Link, see `nlp/types/atom_types.script`
+For more information on the Node & Link, see `lg/types/atom_types.script`
 
 **Since the disjuncts are in DNF, for some words there will be an explosion
 of atoms creation (for example, up to 9000 disjuncts for a word, each
