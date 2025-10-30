@@ -18,7 +18,7 @@ bunch of extra Python library API calls.
 
 Currently the package structure looks like this:
 
- opencog.nlp
+ opencog.lg
 
 ## Tutorial ##
 

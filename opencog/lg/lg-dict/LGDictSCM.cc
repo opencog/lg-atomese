@@ -45,7 +45,6 @@ public:
 
 }
 
-using namespace opencog::nlp;
 using namespace opencog;
 
 /**
@@ -69,8 +68,8 @@ LGDictSCM::LGDictSCM()
  */
 void* LGDictSCM::init_in_guile(void* self)
 {
-	scm_c_define_module("opencog lg dict", init_in_module, self);
-	scm_c_use_module("opencog lg dict");
+	scm_c_define_module("opencog lg", init_in_module, self);
+	scm_c_use_module("opencog lg");
 	return NULL;
 }
 
@@ -91,9 +90,9 @@ void LGDictSCM::init_in_module(void* data)
 void LGDictSCM::init()
 {
 	define_scheme_primitive("lg-conn-type-match?",
-		 &LGDictSCM::do_lg_conn_type_match, this, "nlp lg-dict");
+		 &LGDictSCM::do_lg_conn_type_match, this, "lg");
 	define_scheme_primitive("lg-conn-linkable?",
-		 &LGDictSCM::do_lg_conn_linkable, this, "nlp lg-dict");
+		 &LGDictSCM::do_lg_conn_linkable, this, "lg");
 }
 
 /**
