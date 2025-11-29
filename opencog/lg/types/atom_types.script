@@ -54,7 +54,7 @@ LG_CONN_EXPAND <- FUNCTION_LINK
 LG_DICT_NODE <- NODE
 
 // Evaluates to true, if the word is in the LG dictionary
-LG_HAVE_DICT_ENTRY <- CRISP_OUTPUT_LINK
+LG_HAVE_DICT_ENTRY <- EVALUATABLE_LINK,CRISP_OUTPUT_SIG
 
 // Looks up a single word in the LG dictionary
 LG_DICT_ENTRY <- FUNCTION_LINK

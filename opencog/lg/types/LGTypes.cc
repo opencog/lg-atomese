@@ -1,5 +1,5 @@
 /**
- * NLPTypes.cc
+ * LGTypes.cc
  *
  * Atom Types used during Link Grammar processing.
  *
