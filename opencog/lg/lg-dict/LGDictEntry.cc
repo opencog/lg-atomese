@@ -140,7 +140,7 @@ void LGHaveDictEntry::init()
 }
 
 LGHaveDictEntry::LGHaveDictEntry(const HandleSeq&& oset, Type t)
-	: Link(std::move(oset), t)
+	: EvaluatableLink(std::move(oset), t)
 {
 	// Type must be as expected
 	if (not nameserver().isA(t, LG_HAVE_DICT_ENTRY))

@@ -27,6 +27,7 @@
 #include <link-grammar/link-includes.h>
 
 #include <opencog/atoms/core/FunctionLink.h>
+#include <opencog/atoms/execution/EvaluatableLink.h>
 #include <opencog/lg/types/atom_types.h>
 
 namespace opencog
@@ -73,7 +74,7 @@ static inline LGDictEntryPtr LGDictEntryCast(AtomPtr a)
 
 #define createLGDictEntry std::make_shared<LGDictEntry>
 
-class LGHaveDictEntry : public Link
+class LGHaveDictEntry : public EvaluatableLink
 {
 protected:
 	void init();
