@@ -36,6 +36,7 @@
 #include <opencog/atoms/value/VoidValue.h>
 #include <opencog/atomspace/AtomSpace.h>
 #include <opencog/persist/api/StorageNode.h>
+#include <opencog/persist/storage/storage_types.h>
 #include <opencog/lg/lg-dict/LGDictNode.h>
 #include "LGParseLink.h"
 
