@@ -54,18 +54,11 @@ ADD_DEFINITIONS(-DPROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 # Listed in alphabetical order, more or less.
 # CogUtil must come first, because it supplies various FindXXX macros.
 
-# Add the 'lib' dir to cmake's module search path
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/")
-
 # Cogutil
 FIND_PACKAGE(CogUtil 2.2.1 CONFIG REQUIRED)
-IF (COGUTIL_FOUND)
-    MESSAGE(STATUS "CogUtil found.")
-    ADD_DEFINITIONS(-DHAVE_COGUTIL)
-    SET(HAVE_COGUTIL 1)
-ELSE (COGUTIL_FOUND)
+IF (NOT COGUTIL_FOUND)
     MESSAGE(FATAL_ERROR "CogUtil missing: it is needed!")
-ENDIF (COGUTIL_FOUND)
+ENDIF ()
 
 # Add the 'cmake' directory from cogutil to search path
 LIST(APPEND CMAKE_MODULE_PATH ${COGUTIL_DATA_DIR}/cmake)
@@ -79,22 +72,14 @@ INCLUDE(Summary)
 
 # AtomSpace
 FIND_PACKAGE(AtomSpace 5.2.0 CONFIG REQUIRED)
-IF (ATOMSPACE_FOUND)
-	MESSAGE(STATUS "AtomSpace found.")
-	ADD_DEFINITIONS(-DHAVE_ATOMSPACE)
-	SET(HAVE_ATOMSPACE 1)
-ELSE (ATOMSPACE_FOUND)
+IF (NOT ATOMSPACE_FOUND)
 	MESSAGE(FATAL_ERROR "AtomSpace missing: it is needed!")
-ENDIF (ATOMSPACE_FOUND)
+ENDIF ()
 
 FIND_PACKAGE(AtomSpaceStorage 4.2.0 CONFIG REQUIRED)
-IF (ATOMSPACE_STORAGE_FOUND)
-	MESSAGE(STATUS "AtomSpace Storage found.")
-	ADD_DEFINITIONS(-DHAVE_ATOMSPACE_STORAGE)
-	SET(HAVE_ATOMSPACE_STORAGE 1)
-ELSE (ATOMSPACE_STORAGE_FOUND)
+IF (NOT ATOMSPACE_STORAGE_FOUND)
 	MESSAGE(FATAL_ERROR "AtomSpace Storage missing: it is needed!")
-ENDIF (ATOMSPACE_STORAGE_FOUND)
+ENDIF ()
 
 # ----------------------------------------------------------
 # Needed for unit tests
@@ -112,7 +97,7 @@ IF (LINK_GRAMMAR_FOUND)
 	SET(HAVE_LINK_GRAMMAR 1)
 	INCLUDE_DIRECTORIES(${LINK_GRAMMAR_INCLUDE_DIRS})
 ELSE (LINK_GRAMMAR_FOUND)
-	MESSAGE(STATUS "Link Grammar missing: needed for NLP.")
+	MESSAGE(FATAL_ERROR "Link Grammar missing: it is needed!")
 ENDIF (LINK_GRAMMAR_FOUND)
 
 # ----------------------------------------------------------
@@ -128,14 +113,6 @@ include(OpenCogFindPython)
 INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}
 	${COGUTIL_INCLUDE_DIR} ${ATOMSPACE_INCLUDE_DIR})
 
-# Macros that define how atom types get declared.
-IF (NOT DEFINED ATOMSPACE_DATA_DIR)
-	SET (ATOMSPACE_DATA_DIR "${COGUTIL_DATA_DIR}")
-ENDIF (NOT DEFINED ATOMSPACE_DATA_DIR)
-
-# Add the 'cmake' directory from atomspace to search path (should be
-# the same as cogutil, but we add it just in case)
-LIST(APPEND CMAKE_MODULE_PATH ${ATOMSPACE_DATA_DIR}/cmake)
 INCLUDE(OpenCogMacros)
 INCLUDE(OpenCogGuile)
 INCLUDE(OpenCogCython)
@@ -143,11 +120,7 @@ INCLUDE(OpenCogCython)
 # ==========================================================
 # Decide what to build, based on the packages found.
 
-IF(HAVE_ATOMSPACE AND HAVE_GUILE AND HAVE_LINK_GRAMMAR)
-	SET(HAVE_NLP 1)
-ENDIF(HAVE_ATOMSPACE AND HAVE_GUILE AND HAVE_LINK_GRAMMAR)
-
-ADD_SUBDIRECTORY(lib)
+ADD_SUBDIRECTORY(cmake)
 ADD_SUBDIRECTORY(opencog)
 
 IF (CXXTEST_FOUND)
@@ -215,11 +188,11 @@ SET(CPACK_PACKAGE_EXECUTABLES "cogserver" "The Open Cognition Framework")
 
 ## Debian specific configurations
 SET(DEPENDENCY_LIST
-	"guile-2.2-dev (>= 2.2.2)"
+	"guile-3.0-dev (>= 3.0.0)"
 	"python3-dev (>= 3.6.7)"
 	"libstdc++6 (>= 4.7)"
-	"libcogutil-dev (>= 2.0.2)"
-	"atomspace-dev (>= 5.0.3)"
+	"libcogutil-dev (>= 2.2.1)"
+	"atomspace-dev (>= 5.2.0)"
 )
 
 STRING(REPLACE ";" ", " MAIN_DEPENDENCIES "${DEPENDENCY_LIST}")
@@ -236,7 +209,7 @@ FIND_PACKAGE(Doxygen)
 # ===================================================================
 # Show a summary of what we found, what we will do.
 
-SUMMARY_ADD("LG-Atomese" "Atomese for Link Grammar" HAVE_NLP)
+SUMMARY_ADD("LG-Atomese" "Atomese for Link Grammar" 1)
 SUMMARY_ADD("Python bindings" "Python (cython) bindings" HAVE_CYTHON)
 SUMMARY_ADD("Unit tests" "Unit tests" CXXTEST_FOUND)
 SUMMARY_ADD("Doxygen" "Code documentation" DOXYGEN_FOUND)
