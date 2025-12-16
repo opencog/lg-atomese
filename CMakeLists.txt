@@ -19,7 +19,7 @@ IF(CMAKE_VERSION VERSION_GREATER 3.31)
 	CMAKE_POLICY(SET CMP0177 NEW)
 ENDIF(CMAKE_VERSION VERSION_GREATER 3.31)
 
-PROJECT(lg-atomese)
+PROJECT(lg-atomese VERSION 1.0.0)
 
 # ----------------------------------------------------------
 # User-modifiable options. Feel free to change these!
@@ -58,7 +58,7 @@ ADD_DEFINITIONS(-DPROJECT_SOURCE_DIR="${CMAKE_SOURCE_DIR}"
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/lib/")
 
 # Cogutil
-FIND_PACKAGE(CogUtil 2.0.1 CONFIG REQUIRED)
+FIND_PACKAGE(CogUtil 2.2.1 CONFIG REQUIRED)
 IF (COGUTIL_FOUND)
     MESSAGE(STATUS "CogUtil found.")
     ADD_DEFINITIONS(-DHAVE_COGUTIL)
@@ -78,7 +78,7 @@ INCLUDE(Summary)
 # Check for existance of various required, optional packages.
 
 # AtomSpace
-FIND_PACKAGE(AtomSpace 5.0.3 CONFIG REQUIRED)
+FIND_PACKAGE(AtomSpace 5.2.0 CONFIG REQUIRED)
 IF (ATOMSPACE_FOUND)
 	MESSAGE(STATUS "AtomSpace found.")
 	ADD_DEFINITIONS(-DHAVE_ATOMSPACE)
@@ -87,7 +87,7 @@ ELSE (ATOMSPACE_FOUND)
 	MESSAGE(FATAL_ERROR "AtomSpace missing: it is needed!")
 ENDIF (ATOMSPACE_FOUND)
 
-FIND_PACKAGE(AtomSpaceStorage CONFIG REQUIRED)
+FIND_PACKAGE(AtomSpaceStorage 4.2.0 CONFIG REQUIRED)
 IF (ATOMSPACE_STORAGE_FOUND)
 	MESSAGE(STATUS "AtomSpace Storage found.")
 	ADD_DEFINITIONS(-DHAVE_ATOMSPACE_STORAGE)
@@ -197,9 +197,6 @@ STRING(TIMESTAMP UTC_DATE %Y%m%d UTC)
 # that it is owned by the builder thus avoiding 'Permission denied' error when
 # packaging.
 FILE(WRITE "${PROJECT_BINARY_DIR}/install_manifest.txt")
-## It doesn't have a header-file declaring the version similar to cogutil and
-## atomspace.
-SET(SEMANTIC_VERSION 0.1.4)
 
 ## Cpack configuration
 SET(CPACK_GENERATOR "DEB")
@@ -209,7 +206,7 @@ SET(CPACK_PACKAGE_DIRECTORY "${CMAKE_BINARY_DIR}/packages")
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "The Open Cognition Framework")
 SET(CPACK_PACKAGE_NAME "opencog-dev")
 SET(CPACK_PACKAGE_VENDOR "opencog.org")
-SET(CPACK_PACKAGE_VERSION "${SEMANTIC_VERSION}-${UTC_DATE}")
+SET(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}-${UTC_DATE}")
 SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 SET(CPACK_PACKAGE_FILE_NAME
 	"${CPACK_PACKAGE_NAME}_${CPACK_PACKAGE_VERSION}_${PACKAGE_ARCHITECTURE}")
