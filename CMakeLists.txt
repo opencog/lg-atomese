@@ -115,16 +115,6 @@ ELSE (LINK_GRAMMAR_FOUND)
 	MESSAGE(STATUS "Link Grammar missing: needed for NLP.")
 ENDIF (LINK_GRAMMAR_FOUND)
 
-# UUID's are needed to create unique parse results
-FIND_PACKAGE(UUID)
-IF (UUID_FOUND)
-	SET(HAVE_UUID 1)
-	INCLUDE_DIRECTORIES(${UUID_INCLUDE_DIRS})
-	ADD_DEFINITIONS(${UUID_DEFINITIONS})
-ELSE (UUID_FOUND)
-	MESSAGE(FATAL_ERROR "UUID library missing: needed for NLP.\nDid you forget to install `uuid-dev`?")
-ENDIF (UUID_FOUND)
-
 # ----------------------------------------------------------
 # This is required for Guile, Python and Cython
 
@@ -153,9 +143,9 @@ INCLUDE(OpenCogCython)
 # ==========================================================
 # Decide what to build, based on the packages found.
 
-IF(HAVE_ATOMSPACE AND HAVE_GUILE AND HAVE_LINK_GRAMMAR AND HAVE_UUID)
+IF(HAVE_ATOMSPACE AND HAVE_GUILE AND HAVE_LINK_GRAMMAR)
 	SET(HAVE_NLP 1)
-ENDIF(HAVE_ATOMSPACE AND HAVE_GUILE AND HAVE_LINK_GRAMMAR AND HAVE_UUID)
+ENDIF(HAVE_ATOMSPACE AND HAVE_GUILE AND HAVE_LINK_GRAMMAR)
 
 ADD_SUBDIRECTORY(lib)
 ADD_SUBDIRECTORY(opencog)

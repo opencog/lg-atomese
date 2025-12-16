@@ -22,7 +22,6 @@
  */
 
 #include <atomic>
-#include <uuid/uuid.h>
 #include <link-grammar/link-includes.h>
 #if LINK_MAJOR_VERSION == 5 && LINK_MINOR_VERSION >= 11
 #include <link-grammar/dict-atomese.h>
